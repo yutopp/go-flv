@@ -1,4 +1,4 @@
-# flv-go
+# go-flv
 
 FLV decoder/encoder implementation written in Go.
 
@@ -29,7 +29,7 @@ go get github.com/yutopp/go-flv
 
 ## License
 
-[Boost Software License - Version 1.0](https://www.boost.org/LICENSE_1_0.txt)
+[Boost Software License - Version 1.0](./LICENSE_1_0.txt)
 
 ## References
 

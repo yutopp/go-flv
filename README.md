@@ -1,23 +1,23 @@
 # go-flv
 
-FLV decoder/encoder implementation written in Go.
+FLV decoder/encoder library written in Go.
 
 - [ ] decoder
-  - [ ] header
-  - [ ] body
+  - [x] header
+  - [x] body
   - [ ] tags
-    - [ ] flv
+    - [x] flv
     - [x] audio
     - [x] video
     - [ ] data
     - [ ] onMetaData
 - [ ] encoder
-  - [ ] header
-  - [ ] body
+  - [x] header
+  - [x] body
   - [ ] tags
-    - [ ] flv
-    - [ ] audio
-    - [ ] video
+    - [x] flv
+    - [x] audio
+    - [x] video
     - [ ] data
     - [ ] onMetaData
   

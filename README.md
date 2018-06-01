@@ -34,3 +34,6 @@ go get github.com/yutopp/go-flv
 ## References
 
 - [spec](https://wwwimages2.adobe.com/content/dam/acom/en/devnet/flv/video_file_format_spec_v10.pdf)
+  - The FLV File Format
+  
+  

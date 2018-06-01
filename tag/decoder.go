@@ -9,9 +9,59 @@ package tag
 
 import (
 	"encoding/binary"
+	"fmt"
 	"io"
 	"io/ioutil"
 )
+
+func DecodeFlvTag(r io.Reader, flvTag *FlvTag) error {
+	ui32 := make([]byte, 4)
+	buf := make([]byte, 11)
+	if _, err := io.ReadAtLeast(r, buf, 1); err != nil {
+		return err
+	}
+
+	tagType := TagType(buf[0])
+
+	copy(ui32[1:], buf[1:4]) // 24bit
+	dataSize := binary.BigEndian.Uint32(ui32)
+
+	var timestamp uint32
+	copy(ui32[1:], buf[4:7]) // 24bit
+	timestampBase := binary.BigEndian.Uint32(ui32)
+	timestampExt := buf[7] // 8bit
+
+	timestamp = timestampBase // TODO: fix
+	_ = timestampExt          // TODO: fix
+
+	copy(ui32[1:], buf[8:11])
+	streamID := binary.BigEndian.Uint32(ui32)
+
+	lr := io.LimitReader(r, int64(dataSize))
+	var data interface{}
+	var err error
+	switch tagType {
+	case TagTypeAudio:
+		data, err = DecodeAudioData(lr)
+	case TagTypeVideo:
+		data, err = DecodeVideoData(lr)
+	case TagTypeScriptData:
+		// TODO: implement
+		_, err = io.CopyN(ioutil.Discard, lr, int64(dataSize))
+	default:
+		err = fmt.Errorf("Unsupported tag type: %+v", tagType)
+	}
+	if err != nil {
+		return err
+	}
+
+	flvTag.TagType = tagType
+	flvTag.Timestamp = timestamp
+	flvTag.StreamID = streamID
+	flvTag.Data = data
+
+	return nil
+}
 
 func DecodeAudioData(r io.Reader) (*AudioData, error) {
 	buf := make([]byte, 1)

@@ -13,57 +13,47 @@ import (
 	"testing"
 )
 
-func TestDecodeFlvTagCommon(t *testing.T) {
+func TestEncodeFlvTagCommon(t *testing.T) {
 	for _, tc := range flvTagTestCases {
 		tc := tc // capture
 
 		t.Run(tc.Name, func(t *testing.T) {
 			t.Parallel()
 
-			bin := make([]byte, len(tc.Binary))
-			copy(bin, tc.Binary) // copy ownership
-
-			buf := bytes.NewBuffer(bin)
-			var flvTag FlvTag
-			err := DecodeFlvTag(buf, &flvTag)
+			var buf bytes.Buffer
+			err := EncodeFlvTag(&buf, tc.Value.(*FlvTag))
 			assert.Nil(t, err)
-			assert.Equal(t, tc.Value, &flvTag)
+			assert.Equal(t, tc.Binary, buf.Bytes())
 		})
 	}
 }
 
-func TestDecodeAudioDataCommon(t *testing.T) {
+func TestEncodeAudioDataCommon(t *testing.T) {
 	for _, tc := range audioDataTestCases {
 		tc := tc // capture
 
 		t.Run(tc.Name, func(t *testing.T) {
 			t.Parallel()
 
-			bin := make([]byte, len(tc.Binary))
-			copy(bin, tc.Binary) // copy ownership
-
-			buf := bytes.NewBuffer(bin)
-			audioData, err := DecodeAudioData(buf)
+			var buf bytes.Buffer
+			err := EncodeAudioData(&buf, tc.Value.(*AudioData))
 			assert.Nil(t, err)
-			assert.Equal(t, tc.Value, audioData)
+			assert.Equal(t, tc.Binary, buf.Bytes())
 		})
 	}
 }
 
-func TestDecodeVideoDataCommon(t *testing.T) {
+func TestEncodeVideoDataCommon(t *testing.T) {
 	for _, tc := range videoDataTestCases {
 		tc := tc // capture
 
 		t.Run(tc.Name, func(t *testing.T) {
 			t.Parallel()
 
-			bin := make([]byte, len(tc.Binary))
-			copy(bin, tc.Binary) // copy ownership
-
-			buf := bytes.NewBuffer(bin)
-			videoData, err := DecodeVideoData(buf)
+			var buf bytes.Buffer
+			err := EncodeVideoData(&buf, tc.Value.(*VideoData))
 			assert.Nil(t, err)
-			assert.Equal(t, tc.Value, videoData)
+			assert.Equal(t, tc.Binary, buf.Bytes())
 		})
 	}
 }

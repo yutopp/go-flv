@@ -13,6 +13,39 @@ type testCase struct {
 	Binary []byte
 }
 
+var flvTagTestCases = []testCase{
+	testCase{
+		Name: "AudioData Tag",
+		Value: &FlvTag{
+			TagType:   TagTypeAudio,
+			Timestamp: 10,
+			StreamID:  0,
+			Data: &AudioData{
+				SoundFormat:   SoundFormatAAC,
+				SoundRate:     SoundRate44kHz,
+				SoundSize:     SoundSize16Bit,
+				SoundType:     SoundTypeStereo,
+				AACPacketType: AACPacketTypeSequenceHeader,
+				Data:          []byte("test"),
+			},
+		},
+		Binary: []byte{
+			// AudioTag 8
+			0x08,
+			// DataSize 6
+			0x00, 0x00, 0x06,
+			// Timestamp 10
+			0x00, 0x00, 0x0a,
+			// Extended timestamp 0
+			0x00,
+			// StreamID 0
+			0x00, 0x00, 0x00,
+			// Audio Data
+			0xaf, 0x00, 0x74, 0x65, 0x73, 0x74,
+		},
+	},
+}
+
 var audioDataTestCases = []testCase{
 	testCase{
 		Name: "AudioData(AAC, sequence header)",

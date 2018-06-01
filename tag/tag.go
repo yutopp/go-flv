@@ -10,7 +10,20 @@ package tag
 // ========================================
 // FLV tags
 
-// * not implemented
+type TagType uint8
+
+const (
+	TagTypeAudio      TagType = 8
+	TagTypeVideo              = 9
+	TagTypeScriptData         = 18
+)
+
+type FlvTag struct {
+	TagType
+	Timestamp uint32
+	StreamID  uint32      // 24bit
+	Data      interface{} // *AudioData | *VideoData
+}
 
 // ========================================
 // Audio tags

@@ -1,0 +1,9 @@
+version: 2
+jobs:
+  build:
+    working_directory: /go/src/github.com/yutopp/go-flv
+    docker:
+      - image: circleci/golang:1.10.3
+    steps:
+      - checkout
+      - run: echo "hello world"

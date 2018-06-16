@@ -1,5 +1,3 @@
-.PHONY: all pre fmt test vet lint 
-
 all: pre test
 
 pre: fmt vet lint
@@ -14,6 +12,12 @@ lint:
 	golint $$(go list ./... | grep -v /vendor/)
 
 test:
-	go test -cover ./...
+	go test -v -race -cover ./...
 
+dep-init:
+	dep ensure
 
+dep-update:
+	dep ensure -update
+
+.PHONY: all pre fmt vet lint test dep-init dep-update

@@ -1,6 +1,7 @@
 # go-flv
 
 [![CircleCI](https://circleci.com/gh/yutopp/go-flv.svg?style=svg)](https://circleci.com/gh/yutopp/go-flv)
+[![Coverage Status](https://coveralls.io/repos/github/yutopp/go-flv/badge.svg)](https://coveralls.io/github/yutopp/go-flv)
 
 FLV decoder/encoder library written in Go.
 

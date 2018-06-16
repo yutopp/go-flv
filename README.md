@@ -3,6 +3,7 @@
 [![CircleCI](https://circleci.com/gh/yutopp/go-flv.svg?style=svg)](https://circleci.com/gh/yutopp/go-flv)
 [![Coverage Status](https://coveralls.io/repos/github/yutopp/go-flv/badge.svg)](https://coveralls.io/github/yutopp/go-flv)
 [![Go Report Card](https://goreportcard.com/badge/github.com/yutopp/go-flv)](https://goreportcard.com/report/github.com/yutopp/go-flv)
+[![license](https://img.shields.io/github/license/yutopp/go-flv.svg)](https://github.com/yutopp/go-flv/blob/master/LICENSE_1_0.txt)
 
 FLV decoder/encoder library written in Go.
 

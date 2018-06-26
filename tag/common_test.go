@@ -45,6 +45,35 @@ var flvTagTestCases = []testCase{
 		},
 	},
 	testCase{
+		Name: "VideoData Tag",
+		Value: &FlvTag{
+			TagType:   TagTypeVideo,
+			Timestamp: 10,
+			StreamID:  0,
+			Data: &VideoData{
+				FrameType:       FrameTypeKeyFrame,
+				CodecID:         CodecIDAVC,
+				AVCPacketType:   AVCPacketTypeSequenceHeader,
+				CompositionTime: 0,
+				Data:            []byte("test"),
+			},
+		},
+		Binary: []byte{
+			// VideoTag 9
+			0x09,
+			// DataSize 9
+			0x00, 0x00, 0x09,
+			// Timestamp 10
+			0x00, 0x00, 0x0a,
+			// Extended timestamp 0
+			0x00,
+			// StreamID 0
+			0x00, 0x00, 0x00,
+			// Video Data
+			0x17, 0x00, 0x00, 0x00, 0x00, 0x74, 0x65, 0x73, 0x74,
+		},
+	},
+	testCase{
 		Name: "ScriptData Tag",
 		Value: &FlvTag{
 			TagType:   TagTypeScriptData,

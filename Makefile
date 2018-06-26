@@ -14,10 +14,13 @@ lint:
 test:
 	go test -v -race -cover ./...
 
+bench:
+	go test -bench . -benchmem ./...
+
 dep-init:
 	dep ensure
 
 dep-update:
 	dep ensure -update
 
-.PHONY: all pre fmt vet lint test dep-init dep-update
+.PHONY: all pre fmt vet lint test bench dep-init dep-update

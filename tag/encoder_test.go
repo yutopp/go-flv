@@ -10,6 +10,7 @@ package tag
 import (
 	"bytes"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"testing"
 )
 
@@ -55,5 +56,70 @@ func TestEncodeVideoDataCommon(t *testing.T) {
 			assert.Nil(t, err)
 			assert.Equal(t, tc.Binary, buf.Bytes())
 		})
+	}
+}
+
+func BenchmarkEncodeFlvTagCommon(b *testing.B) {
+	tag := &FlvTag{
+		TagType:   TagTypeAudio,
+		Timestamp: 10,
+		StreamID:  0,
+		Data: &AudioData{
+			SoundFormat:   SoundFormatAAC,
+			SoundRate:     SoundRate44kHz,
+			SoundSize:     SoundSize16Bit,
+			SoundType:     SoundTypeStereo,
+			AACPacketType: AACPacketTypeSequenceHeader,
+			Data:          []byte("test"),
+		},
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = EncodeFlvTag(ioutil.Discard, tag)
+	}
+}
+
+func BenchmarkEncodeAudioDataCommon(b *testing.B) {
+	data := &AudioData{
+		SoundFormat:   SoundFormatAAC,
+		SoundRate:     SoundRate44kHz,
+		SoundSize:     SoundSize16Bit,
+		SoundType:     SoundTypeStereo,
+		AACPacketType: AACPacketTypeSequenceHeader,
+		Data:          []byte("test"),
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = EncodeAudioData(ioutil.Discard, data)
+	}
+}
+
+func BenchmarkEncodeVideoDataCommon(b *testing.B) {
+	data := &VideoData{
+		FrameType:       FrameTypeKeyFrame,
+		CodecID:         CodecIDAVC,
+		AVCPacketType:   AVCPacketTypeSequenceHeader,
+		CompositionTime: 0,
+		Data:            []byte("test"),
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = EncodeVideoData(ioutil.Discard, data)
+	}
+}
+
+func BenchmarkEncodeScriptDataCommon(b *testing.B) {
+	data := &ScriptData{
+		Objects: map[string]interface{}{
+			"test": nil,
+		},
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = EncodeScriptData(ioutil.Discard, data)
 	}
 }

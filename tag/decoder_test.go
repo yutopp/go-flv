@@ -86,3 +86,45 @@ func TestDecodeScriptDataCommon(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkDecodeFlvTagCommon(b *testing.B) {
+	bin := []byte{0x08, 0x00, 0x00, 0x06, 0x00, 0x00, 0x0a, 0x00, 0x00, 0x00, 0x00, 0xaf, 0x00, 0x74, 0x65, 0x73, 0x74}
+	buf := bytes.NewReader(bin)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		var v FlvTag
+		_ = DecodeFlvTag(buf, &v)
+	}
+}
+
+func BenchmarkDecodeAudioDataCommon(b *testing.B) {
+	bin := []byte{0xaf, 0x00, 0x74, 0x65, 0x73, 0x74}
+	buf := bytes.NewReader(bin)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = DecodeAudioData(buf)
+	}
+}
+
+func BenchmarkDecodeVideoDataCommon(b *testing.B) {
+	bin := []byte{0x17, 0x00, 0x00, 0x00, 0x00, 0x74, 0x65, 0x73, 0x74}
+	buf := bytes.NewReader(bin)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = DecodeVideoData(buf)
+	}
+}
+
+func BenchmarkDecodeScriptDataCommon(b *testing.B) {
+	bin := []byte{0x00, 0x04, 0x74, 0x65, 0x73, 0x74, 0x05, 0x00, 0x00, 0x09}
+	buf := bytes.NewReader(bin)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		var v ScriptData
+		_ = DecodeScriptData(buf, &v)
+	}
+}

@@ -19,9 +19,15 @@
   revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
   version = "v1.2.2"
 
+[[projects]]
+  branch = "master"
+  name = "github.com/yutopp/go-amf0"
+  packages = ["."]
+  revision = "17cedd46b508c2a54f8e1c06b106fd44c8b5d5ee"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9850c6dc685fb759558c37c0d83f4a4d0918de2cce35d9d1448bab84f16f63a2"
+  inputs-digest = "849e4ea293cc8c2c83a55caa605af8923c4deb1dc2453e273821cf51072c333a"
   solver-name = "gps-cdcl"
   solver-version = 1

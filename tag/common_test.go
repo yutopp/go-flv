@@ -100,6 +100,56 @@ var flvTagTestCases = []testCase{
 			0x00, 0x04, 0x74, 0x65, 0x73, 0x74, 0x05, 0x00, 0x00, 0x09,
 		},
 	},
+	testCase{
+		Name: "Extended timestamp (boundary)",
+		Value: &FlvTag{
+			TagType:   TagTypeScriptData,
+			Timestamp: 0xffffff,
+			StreamID:  0,
+			Data: &ScriptData{
+				Objects: map[string]interface{}{},
+			},
+		},
+		Binary: []byte{
+			// ScriptDataTag 18
+			0x12,
+			// DataSize 3
+			0x00, 0x00, 0x03,
+			// Timestamp 16777215
+			0xff, 0xff, 0xff,
+			// Extended timestamp 0
+			0x00,
+			// StreamID 0
+			0x00, 0x00, 0x00,
+			// Script Data
+			0x00, 0x00, 0x09,
+		},
+	},
+	testCase{
+		Name: "Extended timestamp",
+		Value: &FlvTag{
+			TagType:   TagTypeScriptData,
+			Timestamp: 0xf0ffffff,
+			StreamID:  0,
+			Data: &ScriptData{
+				Objects: map[string]interface{}{},
+			},
+		},
+		Binary: []byte{
+			// ScriptDataTag 18
+			0x12,
+			// DataSize 3
+			0x00, 0x00, 0x03,
+			// Timestamp 16777215
+			0xff, 0xff, 0xff,
+			// Extended 250
+			0xf0,
+			// StreamID 0
+			0x00, 0x00, 0x00,
+			// Script Data
+			0x00, 0x00, 0x09,
+		},
+	},
 }
 
 var audioDataTestCases = []testCase{

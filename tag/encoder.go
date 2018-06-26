@@ -55,12 +55,11 @@ func EncodeFlvTag(w io.Writer, flvTag *FlvTag) error {
 	buf[0] = byte(flvTag.TagType)
 
 	binary.BigEndian.PutUint32(ui32, uint32(dataBuf.Len()))
-	copy(buf[1:4], ui32[1:]) // 24bit
+	copy(buf[1:4], ui32[1:]) // 24bits
 
-	// TODO: check extended timestamp
 	binary.BigEndian.PutUint32(ui32, flvTag.Timestamp)
-	copy(buf[4:7], ui32[1:]) // 24bit
-	buf[7] = 0               // TODO: fix
+	copy(buf[4:7], ui32[1:]) // lower 24bits
+	buf[7] = ui32[0]         // upper  8bits
 
 	binary.BigEndian.PutUint32(ui32, 0) // StreamID must be 0
 	copy(buf[8:11], ui32[1:])

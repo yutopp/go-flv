@@ -25,18 +25,15 @@ func DecodeFlvTag(r io.Reader, flvTag *FlvTag) error {
 
 	tagType := TagType(buf[0])
 
-	copy(ui32[1:], buf[1:4]) // 24bit
+	copy(ui32[1:], buf[1:4]) // 24bits
 	dataSize := binary.BigEndian.Uint32(ui32)
 
-	var timestamp uint32
-	copy(ui32[1:], buf[4:7]) // 24bit
-	timestampBase := binary.BigEndian.Uint32(ui32)
-	timestampExt := buf[7] // 8bit
-
-	timestamp = timestampBase // TODO: fix
-	_ = timestampExt          // TODO: fix
+	copy(ui32[1:], buf[4:7]) // lower 24bits
+	ui32[0] = buf[7]         // upper  8bits
+	timestamp := binary.BigEndian.Uint32(ui32)
 
 	copy(ui32[1:], buf[8:11])
+	ui32[0] = 0 // clear upper 8bits (not used)
 	streamID := binary.BigEndian.Uint32(ui32)
 
 	lr := io.LimitReader(r, int64(dataSize))

@@ -67,3 +67,22 @@ func TestDecodeVideoDataCommon(t *testing.T) {
 		})
 	}
 }
+
+func TestDecodeScriptDataCommon(t *testing.T) {
+	for _, tc := range scriptDataTestCases {
+		tc := tc // capture
+
+		t.Run(tc.Name, func(t *testing.T) {
+			t.Parallel()
+
+			bin := make([]byte, len(tc.Binary))
+			copy(bin, tc.Binary) // copy ownership
+
+			buf := bytes.NewBuffer(bin)
+			var scriptData ScriptData
+			err := DecodeScriptData(buf, &scriptData)
+			assert.Nil(t, err)
+			assert.Equal(t, tc.Value, &scriptData)
+		})
+	}
+}

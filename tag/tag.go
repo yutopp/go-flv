@@ -141,4 +141,7 @@ type AVCVideoPacket struct {
 // ========================================
 // Data tags
 
-// * not implemented
+type ScriptData struct {
+	// all values are represented as subset of AMF0
+	Objects map[string]interface{}
+}

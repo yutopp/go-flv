@@ -11,6 +11,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"github.com/yutopp/go-amf0"
 	"io"
 )
 
@@ -20,7 +21,7 @@ func EncodeFlvTag(w io.Writer, flvTag *FlvTag) error {
 	case TagTypeAudio:
 		ad, ok := flvTag.Data.(*AudioData)
 		if !ok {
-			return fmt.Errorf("Unexpected data is set")
+			return fmt.Errorf("Unexpected data is set: not *AudioData")
 		}
 		if err := EncodeAudioData(&dataBuf, ad); err != nil {
 			return err
@@ -29,11 +30,21 @@ func EncodeFlvTag(w io.Writer, flvTag *FlvTag) error {
 	case TagTypeVideo:
 		vd, ok := flvTag.Data.(*VideoData)
 		if !ok {
-			return fmt.Errorf("Unexpected data is set")
+			return fmt.Errorf("Unexpected data is set: not *VideoData")
 		}
 		if err := EncodeVideoData(&dataBuf, vd); err != nil {
 			return err
 		}
+
+	case TagTypeScriptData:
+		sd, ok := flvTag.Data.(*ScriptData)
+		if !ok {
+			return fmt.Errorf("Unexpected data is set: not *ScriptData")
+		}
+		if err := EncodeScriptData(&dataBuf, sd); err != nil {
+			return err
+		}
+
 	default:
 		return fmt.Errorf("Unsupported tag type: %+v", flvTag.TagType)
 	}
@@ -144,4 +155,24 @@ func EncodeAVCVideoPacket(w io.Writer, avcVideoPacket *AVCVideoPacket) error {
 	}
 
 	return nil
+}
+
+func EncodeScriptData(w io.Writer, data *ScriptData) error {
+	w = &skipHeadWriter{writer: w} // skip head 1 byte to discard AMF0 object marker
+
+	enc := amf0.NewEncoder(w)
+	return enc.Encode(data.Objects)
+}
+
+type skipHeadWriter struct {
+	writer    io.Writer
+	isSkipped bool
+}
+
+func (w *skipHeadWriter) Write(b []byte) (int, error) {
+	if !w.isSkipped && len(b) >= 1 {
+		b = b[1:]
+		w.isSkipped = true
+	}
+	return w.writer.Write(b)
 }

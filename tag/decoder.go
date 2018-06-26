@@ -8,8 +8,10 @@
 package tag
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
+	"github.com/yutopp/go-amf0"
 	"io"
 	"io/ioutil"
 )
@@ -46,8 +48,9 @@ func DecodeFlvTag(r io.Reader, flvTag *FlvTag) error {
 	case TagTypeVideo:
 		data, err = DecodeVideoData(lr)
 	case TagTypeScriptData:
-		// TODO: implement
-		_, err = io.CopyN(ioutil.Discard, lr, int64(dataSize))
+		var v ScriptData
+		err = DecodeScriptData(lr, &v)
+		data = &v
 	default:
 		err = fmt.Errorf("Unsupported tag type: %+v", tagType)
 	}
@@ -171,4 +174,11 @@ func DecodeAVCVideoPacket(r io.Reader) (*AVCVideoPacket, error) {
 		CompositionTime: compositionTime,
 		Data:            data,
 	}, nil
+}
+
+func DecodeScriptData(r io.Reader, data *ScriptData) error {
+	r = io.MultiReader(bytes.NewReader([]byte{amf0.MarkerObject}), r) // to treat data as an object
+
+	dec := amf0.NewDecoder(r)
+	return dec.Decode(&data.Objects)
 }

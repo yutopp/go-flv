@@ -44,6 +44,33 @@ var flvTagTestCases = []testCase{
 			0xaf, 0x00, 0x74, 0x65, 0x73, 0x74,
 		},
 	},
+	testCase{
+		Name: "ScriptData Tag",
+		Value: &FlvTag{
+			TagType:   TagTypeScriptData,
+			Timestamp: 10,
+			StreamID:  0,
+			Data: &ScriptData{
+				Objects: map[string]interface{}{
+					"test": nil,
+				},
+			},
+		},
+		Binary: []byte{
+			// ScriptDataTag 18
+			0x12,
+			// DataSize 10
+			0x00, 0x00, 0x0a,
+			// Timestamp 10
+			0x00, 0x00, 0x0a,
+			// Extended timestamp 0
+			0x00,
+			// StreamID 0
+			0x00, 0x00, 0x00,
+			// Script Data
+			0x00, 0x04, 0x74, 0x65, 0x73, 0x74, 0x05, 0x00, 0x00, 0x09,
+		},
+	},
 }
 
 var audioDataTestCases = []testCase{
@@ -174,6 +201,29 @@ var videoDataTestCases = []testCase{
 			0x13,
 			// "test" = VideoPacket (!DUMMY DATA!)
 			0x74, 0x65, 0x73, 0x74,
+		},
+	},
+}
+
+var scriptDataTestCases = []testCase{
+	testCase{
+		Name: "ScriptData",
+		Value: &ScriptData{
+			Objects: map[string]interface{}{
+				"test": nil,
+			},
+		},
+		Binary: []byte{
+			// AMF0 string length: 10
+			0x00, 0x04,
+			// AMF0 string: test
+			0x74, 0x65, 0x73, 0x74,
+			// AMF0 null marker
+			0x05,
+			// AMF0 object-property UTF-8-empty
+			0x00, 0x00,
+			// AMF0 object marker marker
+			0x09,
 		},
 	},
 }

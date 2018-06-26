@@ -8,24 +8,22 @@
 
 FLV decoder/encoder library written in Go.
 
-- [ ] decoder
+- [x] decoder
   - [x] header
   - [x] body
-  - [ ] tags
+  - [x] tags
     - [x] flv
     - [x] audio
     - [x] video
-    - [ ] data
-    - [ ] onMetaData
-- [ ] encoder
+    - [x] data
+- [x] encoder
   - [x] header
   - [x] body
-  - [ ] tags
+  - [x] tags
     - [x] flv
     - [x] audio
     - [x] video
-    - [ ] data
-    - [ ] onMetaData
+    - [x] data
   
 ## Installation
 

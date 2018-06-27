@@ -43,9 +43,10 @@ func TestDecodeAudioDataCommon(t *testing.T) {
 			copy(bin, tc.Binary) // copy ownership
 
 			buf := bytes.NewBuffer(bin)
-			audioData, err := DecodeAudioData(buf)
+			var audioData AudioData
+			err := DecodeAudioData(buf, &audioData)
 			assert.Nil(t, err)
-			assert.Equal(t, tc.Value, audioData)
+			assert.Equal(t, tc.Value, &audioData)
 		})
 	}
 }
@@ -61,9 +62,10 @@ func TestDecodeVideoDataCommon(t *testing.T) {
 			copy(bin, tc.Binary) // copy ownership
 
 			buf := bytes.NewBuffer(bin)
-			videoData, err := DecodeVideoData(buf)
+			var videoData VideoData
+			err := DecodeVideoData(buf, &videoData)
 			assert.Nil(t, err)
-			assert.Equal(t, tc.Value, videoData)
+			assert.Equal(t, tc.Value, &videoData)
 		})
 	}
 }
@@ -104,7 +106,8 @@ func BenchmarkDecodeAudioDataCommon(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = DecodeAudioData(buf)
+		var v AudioData
+		_ = DecodeAudioData(buf, &v)
 	}
 }
 
@@ -114,7 +117,8 @@ func BenchmarkDecodeVideoDataCommon(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = DecodeVideoData(buf)
+		var v VideoData
+		_ = DecodeVideoData(buf, &v)
 	}
 }
 

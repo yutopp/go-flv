@@ -36,37 +36,46 @@ func DecodeFlvTag(r io.Reader, flvTag *FlvTag) error {
 	ui32[0] = 0 // clear upper 8bits (not used)
 	streamID := binary.BigEndian.Uint32(ui32)
 
-	lr := io.LimitReader(r, int64(dataSize))
-	var data interface{}
-	var err error
-	switch tagType {
-	case TagTypeAudio:
-		data, err = DecodeAudioData(lr)
-	case TagTypeVideo:
-		data, err = DecodeVideoData(lr)
-	case TagTypeScriptData:
-		var v ScriptData
-		err = DecodeScriptData(lr, &v)
-		data = &v
-	default:
-		err = fmt.Errorf("Unsupported tag type: %+v", tagType)
-	}
-	if err != nil {
-		return err
+	*flvTag = FlvTag{
+		TagType:   tagType,
+		Timestamp: timestamp,
+		StreamID:  streamID,
 	}
 
-	flvTag.TagType = tagType
-	flvTag.Timestamp = timestamp
-	flvTag.StreamID = streamID
-	flvTag.Data = data
+	lr := io.LimitReader(r, int64(dataSize))
+	switch tagType {
+	case TagTypeAudio:
+		var v AudioData
+		if err := DecodeAudioData(lr, &v); err != nil {
+			return err
+		}
+		flvTag.Data = &v
+
+	case TagTypeVideo:
+		var v VideoData
+		if err := DecodeVideoData(lr, &v); err != nil {
+			return err
+		}
+		flvTag.Data = &v
+
+	case TagTypeScriptData:
+		var v ScriptData
+		if err := DecodeScriptData(lr, &v); err != nil {
+			return err
+		}
+		flvTag.Data = &v
+
+	default:
+		return fmt.Errorf("Unsupported tag type: %+v", tagType)
+	}
 
 	return nil
 }
 
-func DecodeAudioData(r io.Reader) (*AudioData, error) {
+func DecodeAudioData(r io.Reader, audioData *AudioData) error {
 	buf := make([]byte, 1)
 	if _, err := io.ReadAtLeast(r, buf, 1); err != nil {
-		return nil, err
+		return err
 	}
 
 	soundFormat := SoundFormat(buf[0] & 0xf0 >> 4) // 0b11110000
@@ -74,87 +83,91 @@ func DecodeAudioData(r io.Reader) (*AudioData, error) {
 	soundSize := SoundSize(buf[0] & 0x02 >> 1)     // 0b00000010
 	soundType := SoundType(buf[0] & 0x01)          // 0b00000001
 
-	audioData := &AudioData{
+	*audioData = AudioData{
 		SoundFormat: soundFormat,
 		SoundRate:   soundRate,
 		SoundSize:   soundSize,
 		SoundType:   soundType,
 	}
+
 	if soundFormat == SoundFormatAAC {
-		aac, err := DecodeAACAudioData(r)
-		if err != nil {
-			return nil, err
+		var aacAudioData AACAudioData
+		if err := DecodeAACAudioData(r, &aacAudioData); err != nil {
+			return err
 		}
 
-		audioData.AACPacketType = aac.AACPacketType
-		audioData.Data = aac.Data
+		audioData.AACPacketType = aacAudioData.AACPacketType
+		audioData.Data = aacAudioData.Data
 	} else {
 		data, err := ioutil.ReadAll(r)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		audioData.Data = data
 	}
 
-	return audioData, nil
+	return nil
 }
 
-func DecodeAACAudioData(r io.Reader) (*AACAudioData, error) {
+func DecodeAACAudioData(r io.Reader, aacAudioData *AACAudioData) error {
 	buf := make([]byte, 1)
 	if _, err := io.ReadAtLeast(r, buf, 1); err != nil {
-		return nil, err
+		return err
 	}
 
 	aacPacketType := AACPacketType(buf[0])
 	data, err := ioutil.ReadAll(r)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &AACAudioData{
+	*aacAudioData = AACAudioData{
 		AACPacketType: aacPacketType,
 		Data:          data,
-	}, nil
+	}
+
+	return nil
 }
 
-func DecodeVideoData(r io.Reader) (*VideoData, error) {
+func DecodeVideoData(r io.Reader, videoData *VideoData) error {
 	buf := make([]byte, 1)
 	if _, err := io.ReadAtLeast(r, buf, 1); err != nil {
-		return nil, err
+		return err
 	}
 
 	frameType := FrameType(buf[0] & 0xf0 >> 4) // 0b11110000
 	codecID := CodecID(buf[0] & 0x0f)          // 0b00001111
 
-	videoData := &VideoData{
+	*videoData = VideoData{
 		FrameType: frameType,
 		CodecID:   codecID,
 	}
+
 	if codecID == CodecIDAVC {
-		avc, err := DecodeAVCVideoPacket(r)
-		if err != nil {
-			return nil, err
+		var avcVideoPacket AVCVideoPacket
+		if err := DecodeAVCVideoPacket(r, &avcVideoPacket); err != nil {
+			return err
 		}
-		videoData.AVCPacketType = avc.AVCPacketType
-		videoData.CompositionTime = avc.CompositionTime
-		videoData.Data = avc.Data
+		videoData.AVCPacketType = avcVideoPacket.AVCPacketType
+		videoData.CompositionTime = avcVideoPacket.CompositionTime
+		videoData.Data = avcVideoPacket.Data
 	} else {
 		data, err := ioutil.ReadAll(r)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		videoData.Data = data
 	}
 
-	return videoData, nil
+	return nil
 }
 
-func DecodeAVCVideoPacket(r io.Reader) (*AVCVideoPacket, error) {
+func DecodeAVCVideoPacket(r io.Reader, avcVideoPacket *AVCVideoPacket) error {
 	buf := make([]byte, 4)
 	if _, err := io.ReadAtLeast(r, buf, 4); err != nil {
-		return nil, err
+		return err
 	}
 
 	avcPacketType := AVCPacketType(buf[0])
@@ -163,14 +176,16 @@ func DecodeAVCVideoPacket(r io.Reader) (*AVCVideoPacket, error) {
 	compositionTime := int32(binary.BigEndian.Uint32(ctBin)) >> 8 // Signed Interger 24 bits. TODO: check
 	data, err := ioutil.ReadAll(r)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &AVCVideoPacket{
+	*avcVideoPacket = AVCVideoPacket{
 		AVCPacketType:   avcPacketType,
 		CompositionTime: compositionTime,
 		Data:            data,
-	}, nil
+	}
+
+	return nil
 }
 
 func DecodeScriptData(r io.Reader, data *ScriptData) error {

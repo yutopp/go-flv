@@ -61,7 +61,7 @@ func EncodeFlvTag(w io.Writer, flvTag *FlvTag) error {
 	copy(buf[4:7], ui32[1:]) // lower 24bits
 	buf[7] = ui32[0]         // upper  8bits
 
-	binary.BigEndian.PutUint32(ui32, 0) // StreamID must be 0
+	binary.BigEndian.PutUint32(ui32, flvTag.StreamID)
 	copy(buf[8:11], ui32[1:])
 
 	if _, err := w.Write(buf); err != nil {

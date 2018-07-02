@@ -157,21 +157,22 @@ func EncodeAVCVideoPacket(w io.Writer, avcVideoPacket *AVCVideoPacket) error {
 }
 
 func EncodeScriptData(w io.Writer, data *ScriptData) error {
-	w = &skipHeadWriter{writer: w} // skip head 1 byte to discard AMF0 object marker
-
 	enc := amf0.NewEncoder(w)
-	return enc.Encode(data.Objects)
-}
 
-type skipHeadWriter struct {
-	writer    io.Writer
-	isSkipped bool
-}
+	for key, value := range data.Objects {
+		if err := enc.Encode(key); err != nil {
+			return err
+		}
 
-func (w *skipHeadWriter) Write(b []byte) (int, error) {
-	if !w.isSkipped && len(b) >= 1 {
-		b = b[1:]
-		w.isSkipped = true
+		if err := enc.Encode(value); err != nil {
+			return err
+		}
 	}
-	return w.writer.Write(b)
+
+	// end markers
+	if err := enc.Encode(amf0.ObjectEnd); err != nil {
+		return err
+	}
+
+	return nil
 }

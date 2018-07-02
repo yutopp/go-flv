@@ -11,6 +11,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"github.com/pkg/errors"
 	"github.com/yutopp/go-amf0"
 	"io"
 	"io/ioutil"
@@ -47,21 +48,24 @@ func DecodeFlvTag(r io.Reader, flvTag *FlvTag) error {
 	case TagTypeAudio:
 		var v AudioData
 		if err := DecodeAudioData(lr, &v); err != nil {
-			return err
+			io.Copy(ioutil.Discard, lr)
+			return errors.Wrap(err, "Failed to decode audio data")
 		}
 		flvTag.Data = &v
 
 	case TagTypeVideo:
 		var v VideoData
 		if err := DecodeVideoData(lr, &v); err != nil {
-			return err
+			io.Copy(ioutil.Discard, lr)
+			return errors.Wrap(err, "Failed to decode video data")
 		}
 		flvTag.Data = &v
 
 	case TagTypeScriptData:
 		var v ScriptData
 		if err := DecodeScriptData(lr, &v); err != nil {
-			return err
+			io.Copy(ioutil.Discard, lr)
+			return errors.Wrap(err, "Failed to decode script data")
 		}
 		flvTag.Data = &v
 
@@ -189,8 +193,35 @@ func DecodeAVCVideoPacket(r io.Reader, avcVideoPacket *AVCVideoPacket) error {
 }
 
 func DecodeScriptData(r io.Reader, data *ScriptData) error {
-	r = io.MultiReader(bytes.NewReader([]byte{amf0.MarkerObject}), r) // to treat data as an object
-
+	headBuf := make([]byte, 3)
 	dec := amf0.NewDecoder(r)
-	return dec.Decode(&data.Objects)
+
+	kv := make(map[string]interface{})
+	for {
+		if _, err := io.ReadAtLeast(r, headBuf, 3); err != nil {
+			return errors.Wrap(err, "Failed to read head 3 bytes")
+		}
+		if headBuf[0] == 0x00 && headBuf[1] == 0x00 && headBuf[2] == 0x09 {
+			break
+		}
+
+		mr := io.MultiReader(bytes.NewReader(headBuf), r)
+		dec.Reset(mr)
+
+		var key string
+		if err := dec.Decode(&key); err != nil {
+			return errors.Wrap(err, "Failed to decode key")
+		}
+
+		var value interface{}
+		if err := dec.Decode(&value); err != nil {
+			return errors.Wrap(err, "Failed to decode value")
+		}
+
+		kv[key] = value
+	}
+
+	data.Objects = kv
+
+	return nil
 }

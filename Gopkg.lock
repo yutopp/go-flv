@@ -8,6 +8,12 @@
   version = "v1.1.0"
 
 [[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
+
+[[projects]]
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
@@ -23,11 +29,11 @@
   branch = "master"
   name = "github.com/yutopp/go-amf0"
   packages = ["."]
-  revision = "17cedd46b508c2a54f8e1c06b106fd44c8b5d5ee"
+  revision = "ed1f863aece0ba4b1ac898c72d25aec73af12517"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "849e4ea293cc8c2c83a55caa605af8923c4deb1dc2453e273821cf51072c333a"
+  inputs-digest = "7465fbaf2e15db4155d4f9c22d665e27e2bee045f93ca1e8e604dfa25dc2322f"
   solver-name = "gps-cdcl"
   solver-version = 1

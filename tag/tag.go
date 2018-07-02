@@ -14,8 +14,8 @@ type TagType uint8
 
 const (
 	TagTypeAudio      TagType = 8
-	TagTypeVideo              = 9
-	TagTypeScriptData         = 18
+	TagTypeVideo      TagType = 9
+	TagTypeScriptData TagType = 18
 )
 
 type FlvTag struct {

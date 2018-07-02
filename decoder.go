@@ -11,6 +11,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"github.com/pkg/errors"
 	"io"
 	"io/ioutil"
 
@@ -53,19 +54,19 @@ func (dec *Decoder) Decode(flvTag *tag.FlvTag) error {
 
 body:
 	if err := tag.DecodeFlvTag(dec.r, flvTag); err != nil {
+		dec.skipTagSize()
 		return err
 	}
 
 tagSize:
-	buf := make([]byte, 4)
-	if _, err := io.ReadAtLeast(dec.r, buf, len(buf)); err != nil {
-		return err
+	previousTagSize, err := dec.decodeTagSize()
+	if err != nil {
+		return errors.Wrap(err, "Failed to decode tag size")
 	}
-	previousTagSize := binary.BigEndian.Uint32(buf)
 
 	if !dec.decodedOnce {
 		if previousTagSize != 0 {
-			return fmt.Errorf("Initial tag Size should be 0: %d", previousTagSize)
+			return fmt.Errorf("Initial tag size should be 0: Actual = %d", previousTagSize)
 		}
 
 		dec.decodedOnce = true
@@ -73,6 +74,20 @@ tagSize:
 	}
 
 	return nil
+}
+
+func (dec *Decoder) decodeTagSize() (uint32, error) {
+	buf := make([]byte, 4)
+	if _, err := io.ReadAtLeast(dec.r, buf, len(buf)); err != nil {
+		return 0, err
+	}
+
+	return binary.BigEndian.Uint32(buf), nil
+}
+
+func (dec *Decoder) skipTagSize() {
+	lr := io.LimitReader(dec.r, 4)
+	io.Copy(ioutil.Discard, lr)
 }
 
 func DecodeFlvHeader(r io.Reader) (*Header, error) {

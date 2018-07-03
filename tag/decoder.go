@@ -194,7 +194,7 @@ func DecodeAVCVideoPacket(r io.Reader, avcVideoPacket *AVCVideoPacket) error {
 func DecodeScriptData(r io.Reader, data *ScriptData) error {
 	dec := amf0.NewDecoder(r)
 
-	kv := make(map[string]interface{})
+	kv := make(map[string]amf0.ECMAArray)
 	for {
 		var key string
 		if err := dec.Decode(&key); err != nil {

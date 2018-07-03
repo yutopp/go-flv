@@ -7,6 +7,10 @@
 
 package tag
 
+import (
+	"github.com/yutopp/go-amf0"
+)
+
 // ========================================
 // FLV tags
 
@@ -143,5 +147,5 @@ type AVCVideoPacket struct {
 
 type ScriptData struct {
 	// all values are represented as subset of AMF0
-	Objects map[string]interface{}
+	Objects map[string]amf0.ECMAArray
 }

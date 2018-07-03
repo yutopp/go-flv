@@ -10,6 +10,7 @@ package tag
 import (
 	"bytes"
 	"github.com/stretchr/testify/assert"
+	"github.com/yutopp/go-amf0"
 	"io/ioutil"
 	"testing"
 )
@@ -113,7 +114,7 @@ func BenchmarkEncodeVideoDataCommon(b *testing.B) {
 
 func BenchmarkEncodeScriptDataCommon(b *testing.B) {
 	data := &ScriptData{
-		Objects: map[string]interface{}{
+		Objects: map[string]amf0.ECMAArray{
 			"test": nil,
 		},
 	}

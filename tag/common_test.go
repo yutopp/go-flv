@@ -84,7 +84,7 @@ var flvTagTestCases = []testCase{
 			Timestamp: 10,
 			StreamID:  0,
 			Data: &ScriptData{
-				Objects: map[string]interface{}{
+				Objects: map[string]amf0.ECMAArray{
 					"test": amf0.ECMAArray{},
 				},
 			},
@@ -302,7 +302,7 @@ var scriptDataTestCases = []testCase{
 	testCase{
 		Name: "ScriptData",
 		Value: &ScriptData{
-			Objects: map[string]interface{}{
+			Objects: map[string]amf0.ECMAArray{
 				"test": amf0.ECMAArray{},
 			},
 		},

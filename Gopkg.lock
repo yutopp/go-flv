@@ -29,7 +29,7 @@
   branch = "master"
   name = "github.com/yutopp/go-amf0"
   packages = ["."]
-  revision = "4420be52af406ed007aec0181a7ca69c2b305f6b"
+  revision = "6680b8ea410e1a4755946613797f982455705ed9"
 
 [solve-meta]
   analyzer-name = "dep"

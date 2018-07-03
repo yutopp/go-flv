@@ -8,7 +8,6 @@
 package tag
 
 import (
-	"bytes"
 	"encoding/binary"
 	"fmt"
 	"github.com/pkg/errors"
@@ -193,27 +192,19 @@ func DecodeAVCVideoPacket(r io.Reader, avcVideoPacket *AVCVideoPacket) error {
 }
 
 func DecodeScriptData(r io.Reader, data *ScriptData) error {
-	headBuf := make([]byte, 3)
 	dec := amf0.NewDecoder(r)
 
 	kv := make(map[string]interface{})
 	for {
-		if _, err := io.ReadAtLeast(r, headBuf, 3); err != nil {
-			return errors.Wrap(err, "Failed to read head 3 bytes")
-		}
-		if headBuf[0] == 0x00 && headBuf[1] == 0x00 && headBuf[2] == 0x09 {
-			break
-		}
-
-		mr := io.MultiReader(bytes.NewReader(headBuf), r)
-		dec.Reset(mr)
-
 		var key string
 		if err := dec.Decode(&key); err != nil {
+			if err == io.EOF {
+				break
+			}
 			return errors.Wrap(err, "Failed to decode key")
 		}
 
-		var value interface{}
+		var value amf0.ECMAArray
 		if err := dec.Decode(&value); err != nil {
 			return errors.Wrap(err, "Failed to decode value")
 		}

@@ -169,10 +169,5 @@ func EncodeScriptData(w io.Writer, data *ScriptData) error {
 		}
 	}
 
-	// end markers
-	if err := enc.Encode(amf0.ObjectEnd); err != nil {
-		return err
-	}
-
 	return nil
 }

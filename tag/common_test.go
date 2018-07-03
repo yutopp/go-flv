@@ -7,6 +7,10 @@
 
 package tag
 
+import (
+	"github.com/yutopp/go-amf0"
+)
+
 type testCase struct {
 	Name   string
 	Value  interface{}
@@ -81,15 +85,15 @@ var flvTagTestCases = []testCase{
 			StreamID:  0,
 			Data: &ScriptData{
 				Objects: map[string]interface{}{
-					"test": nil,
+					"test": amf0.ECMAArray{},
 				},
 			},
 		},
 		Binary: []byte{
 			// ScriptDataTag 18
 			0x12,
-			// DataSize 11
-			0x00, 0x00, 0x0b,
+			// DataSize 15
+			0x00, 0x00, 0x0f,
 			// Timestamp 10
 			0x00, 0x00, 0x0a,
 			// Extended timestamp 0
@@ -97,57 +101,67 @@ var flvTagTestCases = []testCase{
 			// StreamID 0
 			0x00, 0x00, 0x00,
 			// Script Data
-			0x02, 0x00, 0x04, 0x74, 0x65, 0x73, 0x74, 0x05, 0x00, 0x00, 0x09,
+			0x02, 0x00, 0x04, 0x74, 0x65, 0x73, 0x74,
+			0x08, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x09,
 		},
 	},
 	testCase{
 		Name: "Extended timestamp (boundary)",
 		Value: &FlvTag{
-			TagType:   TagTypeScriptData,
+			TagType:   TagTypeVideo,
 			Timestamp: 0xffffff,
 			StreamID:  0,
-			Data: &ScriptData{
-				Objects: map[string]interface{}{},
+			Data: &VideoData{
+				FrameType:       FrameTypeKeyFrame,
+				CodecID:         CodecIDAVC,
+				AVCPacketType:   AVCPacketTypeSequenceHeader,
+				CompositionTime: 0,
+				Data:            []byte("test"),
 			},
 		},
 		Binary: []byte{
-			// ScriptDataTag 18
-			0x12,
-			// DataSize 3
-			0x00, 0x00, 0x03,
+			// VideoTag 9
+			0x09,
+			// DataSize 9
+			0x00, 0x00, 0x09,
 			// Timestamp 16777215
 			0xff, 0xff, 0xff,
 			// Extended timestamp 0
 			0x00,
 			// StreamID 0
 			0x00, 0x00, 0x00,
-			// Script Data
-			0x00, 0x00, 0x09,
+			// Video Data
+			0x17, 0x00, 0x00, 0x00, 0x00, 0x74, 0x65, 0x73, 0x74,
 		},
 	},
 	testCase{
 		Name: "Extended timestamp",
 		Value: &FlvTag{
-			TagType:   TagTypeScriptData,
+			TagType:   TagTypeVideo,
 			Timestamp: 0xf0ffffff,
 			StreamID:  0,
-			Data: &ScriptData{
-				Objects: map[string]interface{}{},
+			Data: &VideoData{
+				FrameType:       FrameTypeKeyFrame,
+				CodecID:         CodecIDAVC,
+				AVCPacketType:   AVCPacketTypeSequenceHeader,
+				CompositionTime: 0,
+				Data:            []byte("test"),
 			},
 		},
 		Binary: []byte{
-			// ScriptDataTag 18
-			0x12,
-			// DataSize 3
-			0x00, 0x00, 0x03,
+			// VideoTag 9
+			0x09,
+			// DataSize 9
+			0x00, 0x00, 0x09,
 			// Timestamp 16777215
 			0xff, 0xff, 0xff,
 			// Extended 250
 			0xf0,
 			// StreamID 0
 			0x00, 0x00, 0x00,
-			// Script Data
-			0x00, 0x00, 0x09,
+			// Video Data
+			0x17, 0x00, 0x00, 0x00, 0x00, 0x74, 0x65, 0x73, 0x74,
 		},
 	},
 }
@@ -289,7 +303,7 @@ var scriptDataTestCases = []testCase{
 		Name: "ScriptData",
 		Value: &ScriptData{
 			Objects: map[string]interface{}{
-				"test": nil,
+				"test": amf0.ECMAArray{},
 			},
 		},
 		Binary: []byte{
@@ -299,12 +313,12 @@ var scriptDataTestCases = []testCase{
 			0x00, 0x04,
 			// AMF0 string: test
 			0x74, 0x65, 0x73, 0x74,
-			// AMF0 null marker
-			0x05,
-			// AMF0 object-property UTF-8-empty
-			0x00, 0x00,
-			// AMF0 object marker marker
-			0x09,
+			// AMF0 ECMA Array marker
+			0x08,
+			// AMF0 ECMA Array length
+			0x00, 0x00, 0x00, 0x00,
+			// AMF0 object-property end
+			0x00, 0x00, 0x09,
 		},
 	},
 }

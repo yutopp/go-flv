@@ -89,6 +89,15 @@ func TestDecodeScriptDataCommon(t *testing.T) {
 	}
 }
 
+func TestDecodeScriptDataPartial(t *testing.T) {
+	bin := []byte{0x00} // Invalid data
+	r := bytes.NewBuffer(bin)
+
+	var scriptData ScriptData
+	err := DecodeScriptData(r, &scriptData)
+	assert.NotNil(t, err)
+}
+
 func BenchmarkDecodeFlvTagCommon(b *testing.B) {
 	bin := []byte{0x08, 0x00, 0x00, 0x06, 0x00, 0x00, 0x0a, 0x00, 0x00, 0x00, 0x00, 0xaf, 0x00, 0x74, 0x65, 0x73, 0x74}
 	buf := bytes.NewReader(bin)

@@ -96,7 +96,7 @@ func DecodeAudioData(r io.Reader, audioData *AudioData) error {
 	if soundFormat == SoundFormatAAC {
 		var aacAudioData AACAudioData
 		if err := DecodeAACAudioData(r, &aacAudioData); err != nil {
-			return err
+			return wrapEOF(err)
 		}
 
 		audioData.AACPacketType = aacAudioData.AACPacketType
@@ -104,7 +104,7 @@ func DecodeAudioData(r io.Reader, audioData *AudioData) error {
 	} else {
 		data, err := ioutil.ReadAll(r)
 		if err != nil {
-			return err
+			return wrapEOF(err)
 		}
 
 		audioData.Data = data
@@ -122,7 +122,7 @@ func DecodeAACAudioData(r io.Reader, aacAudioData *AACAudioData) error {
 	aacPacketType := AACPacketType(buf[0])
 	data, err := ioutil.ReadAll(r)
 	if err != nil {
-		return err
+		return wrapEOF(err)
 	}
 
 	*aacAudioData = AACAudioData{
@@ -150,7 +150,7 @@ func DecodeVideoData(r io.Reader, videoData *VideoData) error {
 	if codecID == CodecIDAVC {
 		var avcVideoPacket AVCVideoPacket
 		if err := DecodeAVCVideoPacket(r, &avcVideoPacket); err != nil {
-			return err
+			return wrapEOF(err)
 		}
 		videoData.AVCPacketType = avcVideoPacket.AVCPacketType
 		videoData.CompositionTime = avcVideoPacket.CompositionTime
@@ -158,7 +158,7 @@ func DecodeVideoData(r io.Reader, videoData *VideoData) error {
 	} else {
 		data, err := ioutil.ReadAll(r)
 		if err != nil {
-			return err
+			return wrapEOF(err)
 		}
 
 		videoData.Data = data
@@ -179,7 +179,7 @@ func DecodeAVCVideoPacket(r io.Reader, avcVideoPacket *AVCVideoPacket) error {
 	compositionTime := int32(binary.BigEndian.Uint32(ctBin)) >> 8 // Signed Interger 24 bits. TODO: check
 	data, err := ioutil.ReadAll(r)
 	if err != nil {
-		return err
+		return wrapEOF(err)
 	}
 
 	*avcVideoPacket = AVCVideoPacket{
@@ -215,4 +215,11 @@ func DecodeScriptData(r io.Reader, data *ScriptData) error {
 	data.Objects = kv
 
 	return nil
+}
+
+func wrapEOF(err error) error {
+	if err == io.EOF {
+		return io.ErrUnexpectedEOF
+	}
+	return err
 }

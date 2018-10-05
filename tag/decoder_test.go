@@ -10,6 +10,7 @@ package tag
 import (
 	"bytes"
 	"github.com/stretchr/testify/assert"
+	"io"
 	"testing"
 )
 
@@ -51,6 +52,22 @@ func TestDecodeAudioDataCommon(t *testing.T) {
 	}
 }
 
+func TestDecodeEmptyAudio(t *testing.T) {
+	r := bytes.NewReader([]byte{})
+
+	var audioData AudioData
+	err := DecodeAudioData(r, &audioData)
+	assert.Equal(t, io.EOF, err)
+}
+
+func TestDecodeBrokenAudio(t *testing.T) {
+	r := bytes.NewReader([]byte{0xa0}) // AAC requires at least 2Bytes
+
+	var audioData AudioData
+	err := DecodeAudioData(r, &audioData)
+	assert.Equal(t, io.ErrUnexpectedEOF, err)
+}
+
 func TestDecodeVideoDataCommon(t *testing.T) {
 	for _, tc := range videoDataTestCases {
 		tc := tc // capture
@@ -70,6 +87,22 @@ func TestDecodeVideoDataCommon(t *testing.T) {
 	}
 }
 
+func TestDecodeEmptyVideo(t *testing.T) {
+	r := bytes.NewReader([]byte{})
+
+	var videoData VideoData
+	err := DecodeVideoData(r, &videoData)
+	assert.Equal(t, io.EOF, err)
+}
+
+func TestDecodeBrokenVideo(t *testing.T) {
+	r := bytes.NewReader([]byte{0x07}) // AVC requires at least 2Bytes
+
+	var videoData VideoData
+	err := DecodeVideoData(r, &videoData)
+	assert.Equal(t, io.ErrUnexpectedEOF, err)
+}
+
 func TestDecodeScriptDataCommon(t *testing.T) {
 	for _, tc := range scriptDataTestCases {
 		tc := tc // capture
@@ -87,6 +120,22 @@ func TestDecodeScriptDataCommon(t *testing.T) {
 			assert.Equal(t, 0, r.Len())
 		})
 	}
+}
+
+func TestDecodeEmptyScriptData(t *testing.T) {
+	r := bytes.NewReader([]byte{})
+
+	var scriptData ScriptData
+	err := DecodeScriptData(r, &scriptData)
+	assert.Equal(t, nil, err)
+}
+
+func TestDecodeBrokenScriptData(t *testing.T) {
+	r := bytes.NewReader([]byte{0x01})
+
+	var scriptData ScriptData
+	err := DecodeScriptData(r, &scriptData)
+	assert.EqualError(t, err, "Failed to decode key: unexpected EOF")
 }
 
 func TestDecodeScriptDataPartial(t *testing.T) {

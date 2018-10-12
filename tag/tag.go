@@ -9,6 +9,7 @@ package tag
 
 import (
 	"github.com/yutopp/go-amf0"
+	"io"
 )
 
 // ========================================
@@ -80,7 +81,7 @@ type AudioData struct {
 	SoundSize     SoundSize
 	SoundType     SoundType
 	AACPacketType AACPacketType
-	Data          []byte
+	Data          io.Reader
 }
 
 type AACPacketType uint8
@@ -92,7 +93,7 @@ const (
 
 type AACAudioData struct {
 	AACPacketType AACPacketType
-	Data          []byte
+	Data          io.Reader
 }
 
 // ========================================
@@ -125,7 +126,7 @@ type VideoData struct {
 	CodecID         CodecID
 	AVCPacketType   AVCPacketType
 	CompositionTime int32
-	Data            []byte
+	Data            io.Reader
 }
 
 type AVCPacketType uint8
@@ -139,7 +140,7 @@ const (
 type AVCVideoPacket struct {
 	AVCPacketType   AVCPacketType
 	CompositionTime int32
-	Data            []byte
+	Data            io.Reader
 }
 
 // ========================================

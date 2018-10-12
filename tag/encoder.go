@@ -92,7 +92,7 @@ func EncodeAudioData(w io.Writer, audioData *AudioData) error {
 		})
 	}
 
-	if _, err := w.Write(audioData.Data); err != nil {
+	if _, err := io.Copy(w, audioData.Data); err != nil {
 		return err
 	}
 
@@ -106,7 +106,7 @@ func EncodeAACAudioData(w io.Writer, aacAudioData *AACAudioData) error {
 		return err
 	}
 
-	if _, err := w.Write(aacAudioData.Data); err != nil {
+	if _, err := io.Copy(w, aacAudioData.Data); err != nil {
 		return err
 	}
 
@@ -130,7 +130,7 @@ func EncodeVideoData(w io.Writer, videoData *VideoData) error {
 		})
 	}
 
-	if _, err := w.Write(videoData.Data); err != nil {
+	if _, err := io.Copy(w, videoData.Data); err != nil {
 		return err
 	}
 
@@ -149,7 +149,7 @@ func EncodeAVCVideoPacket(w io.Writer, avcVideoPacket *AVCVideoPacket) error {
 		return err
 	}
 
-	if _, err := w.Write(avcVideoPacket.Data); err != nil {
+	if _, err := io.Copy(w, avcVideoPacket.Data); err != nil {
 		return err
 	}
 

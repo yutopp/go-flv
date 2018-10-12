@@ -12,9 +12,10 @@ import (
 )
 
 type testCase struct {
-	Name   string
-	Value  interface{}
-	Binary []byte
+	Name    string
+	Value   interface{}
+	Payload []byte
+	Binary  []byte
 }
 
 var flvTagTestCases = []testCase{
@@ -30,9 +31,10 @@ var flvTagTestCases = []testCase{
 				SoundSize:     SoundSize16Bit,
 				SoundType:     SoundTypeStereo,
 				AACPacketType: AACPacketTypeSequenceHeader,
-				Data:          []byte("test"),
+				Data:          nil,
 			},
 		},
+		Payload: []byte("test"),
 		Binary: []byte{
 			// AudioTag 8
 			0x08,
@@ -59,9 +61,10 @@ var flvTagTestCases = []testCase{
 				CodecID:         CodecIDAVC,
 				AVCPacketType:   AVCPacketTypeSequenceHeader,
 				CompositionTime: 0,
-				Data:            []byte("test"),
+				Data:            nil,
 			},
 		},
+		Payload: []byte("test"),
 		Binary: []byte{
 			// VideoTag 9
 			0x09,
@@ -117,9 +120,10 @@ var flvTagTestCases = []testCase{
 				CodecID:         CodecIDAVC,
 				AVCPacketType:   AVCPacketTypeSequenceHeader,
 				CompositionTime: 0,
-				Data:            []byte("test"),
+				Data:            nil,
 			},
 		},
+		Payload: []byte("test"),
 		Binary: []byte{
 			// VideoTag 9
 			0x09,
@@ -146,9 +150,10 @@ var flvTagTestCases = []testCase{
 				CodecID:         CodecIDAVC,
 				AVCPacketType:   AVCPacketTypeSequenceHeader,
 				CompositionTime: 0,
-				Data:            []byte("test"),
+				Data:            nil,
 			},
 		},
+		Payload: []byte("test"),
 		Binary: []byte{
 			// VideoTag 9
 			0x09,
@@ -175,8 +180,9 @@ var audioDataTestCases = []testCase{
 			SoundSize:     SoundSize16Bit,
 			SoundType:     SoundTypeStereo,
 			AACPacketType: AACPacketTypeSequenceHeader,
-			Data:          []byte("test"),
+			Data:          nil,
 		},
+		Payload: []byte("test"),
 		Binary: []byte{
 			// 0xaf: 0b10101111
 			//         1010     = SoundFormat 10(AAC)
@@ -198,8 +204,9 @@ var audioDataTestCases = []testCase{
 			SoundSize:     SoundSize16Bit,
 			SoundType:     SoundTypeStereo,
 			AACPacketType: AACPacketTypeRaw,
-			Data:          []byte("test"),
+			Data:          nil,
 		},
+		Payload: []byte("test"),
 		Binary: []byte{
 			// 0xaf: 0b10101111
 			//         1010     = SoundFormat 10(AAC)
@@ -220,8 +227,9 @@ var audioDataTestCases = []testCase{
 			SoundRate:   SoundRate44kHz,
 			SoundSize:   SoundSize16Bit,
 			SoundType:   SoundTypeStereo,
-			Data:        []byte("test"),
+			Data:        nil,
 		},
+		Payload: []byte("test"),
 		Binary: []byte{
 			// 0xaf: 0b11101111
 			//         1011     = SoundFormat 11(Speex)
@@ -243,8 +251,9 @@ var videoDataTestCases = []testCase{
 			CodecID:         CodecIDAVC,
 			AVCPacketType:   AVCPacketTypeSequenceHeader,
 			CompositionTime: 0,
-			Data:            []byte("test"),
+			Data:            nil,
 		},
+		Payload: []byte("test"),
 		Binary: []byte{
 			// 0x17: 0b00010111
 			//         0001     = FrameType 1(Keyframe)
@@ -265,8 +274,9 @@ var videoDataTestCases = []testCase{
 			CodecID:         CodecIDAVC,
 			AVCPacketType:   AVCPacketTypeNALU,
 			CompositionTime: -256,
-			Data:            []byte("test"),
+			Data:            nil,
 		},
+		Payload: []byte("test"),
 		Binary: []byte{
 			// 0x27: 0b00020111
 			//         0002     = FrameType 2(Interframe)
@@ -285,8 +295,9 @@ var videoDataTestCases = []testCase{
 		Value: &VideoData{
 			FrameType: FrameTypeKeyFrame,
 			CodecID:   CodecIDScreenVideo,
-			Data:      []byte("test"),
+			Data:      nil,
 		},
+		Payload: []byte("test"),
 		Binary: []byte{
 			// 0x17: 0b00010003
 			//         0001     = FrameType 1(KeyInterframe)

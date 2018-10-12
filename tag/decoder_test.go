@@ -11,8 +11,32 @@ import (
 	"bytes"
 	"github.com/stretchr/testify/assert"
 	"io"
+	"io/ioutil"
 	"testing"
 )
+
+func assertEqualAudioData(t *testing.T, expected *AudioData, payload []byte, actual *AudioData) {
+	assert.Equal(t, expected.SoundFormat, actual.SoundFormat)
+	assert.Equal(t, expected.SoundRate, actual.SoundRate)
+	assert.Equal(t, expected.SoundSize, actual.SoundSize)
+	assert.Equal(t, expected.SoundType, actual.SoundType)
+	assert.Equal(t, expected.AACPacketType, actual.AACPacketType)
+
+	actualPayload, err := ioutil.ReadAll(actual.Data)
+	assert.Nil(t, err)
+	assert.Equal(t, payload, actualPayload)
+}
+
+func assertEqualVideoData(t *testing.T, expected *VideoData, payload []byte, actual *VideoData) {
+	assert.Equal(t, expected.FrameType, actual.FrameType)
+	assert.Equal(t, expected.CodecID, actual.CodecID)
+	assert.Equal(t, expected.AVCPacketType, actual.AVCPacketType)
+	assert.Equal(t, expected.CompositionTime, actual.CompositionTime)
+
+	actualPayload, err := ioutil.ReadAll(actual.Data)
+	assert.Nil(t, err)
+	assert.Equal(t, payload, actualPayload)
+}
 
 func TestDecodeFlvTagCommon(t *testing.T) {
 	for _, tc := range flvTagTestCases {
@@ -26,7 +50,21 @@ func TestDecodeFlvTagCommon(t *testing.T) {
 			var flvTag FlvTag
 			err := DecodeFlvTag(r, &flvTag)
 			assert.Nil(t, err)
-			assert.Equal(t, tc.Value, &flvTag)
+
+			assert.Equal(t, tc.Value.(*FlvTag).TagType, flvTag.TagType)
+			assert.Equal(t, tc.Value.(*FlvTag).Timestamp, flvTag.Timestamp)
+			assert.Equal(t, tc.Value.(*FlvTag).StreamID, flvTag.StreamID)
+
+			switch data := flvTag.Data.(type) {
+			case *AudioData:
+				tcData := tc.Value.(*FlvTag).Data.(*AudioData)
+				assertEqualAudioData(t, tcData, tc.Payload, data)
+			case *VideoData:
+				tcData := tc.Value.(*FlvTag).Data.(*VideoData)
+				assertEqualVideoData(t, tcData, tc.Payload, data)
+			default:
+				assert.Equal(t, tc.Value.(*FlvTag).Data, flvTag.Data)
+			}
 
 			assert.Equal(t, 0, r.Len())
 		})
@@ -45,7 +83,7 @@ func TestDecodeAudioDataCommon(t *testing.T) {
 			var audioData AudioData
 			err := DecodeAudioData(r, &audioData)
 			assert.Nil(t, err)
-			assert.Equal(t, tc.Value, &audioData)
+			assertEqualAudioData(t, tc.Value.(*AudioData), tc.Payload, &audioData)
 
 			assert.Equal(t, 0, r.Len())
 		})
@@ -80,7 +118,7 @@ func TestDecodeVideoDataCommon(t *testing.T) {
 			var videoData VideoData
 			err := DecodeVideoData(r, &videoData)
 			assert.Nil(t, err)
-			assert.Equal(t, tc.Value, &videoData)
+			assertEqualVideoData(t, tc.Value.(*VideoData), tc.Payload, &videoData)
 
 			assert.Equal(t, 0, r.Len())
 		})

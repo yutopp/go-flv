@@ -22,6 +22,13 @@ func TestEncodeFlvTagCommon(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			t.Parallel()
 
+			switch data := tc.Value.(*FlvTag).Data.(type) {
+			case *AudioData:
+				data.Data = bytes.NewReader(tc.Payload)
+			case *VideoData:
+				data.Data = bytes.NewReader(tc.Payload)
+			}
+
 			var buf bytes.Buffer
 			err := EncodeFlvTag(&buf, tc.Value.(*FlvTag))
 			assert.Nil(t, err)
@@ -36,6 +43,8 @@ func TestEncodeAudioDataCommon(t *testing.T) {
 
 		t.Run(tc.Name, func(t *testing.T) {
 			t.Parallel()
+
+			tc.Value.(*AudioData).Data = bytes.NewReader(tc.Payload) // Restore reader state
 
 			var buf bytes.Buffer
 			err := EncodeAudioData(&buf, tc.Value.(*AudioData))
@@ -52,6 +61,8 @@ func TestEncodeVideoDataCommon(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			t.Parallel()
 
+			tc.Value.(*VideoData).Data = bytes.NewReader(tc.Payload) // Restore reader state
+
 			var buf bytes.Buffer
 			err := EncodeVideoData(&buf, tc.Value.(*VideoData))
 			assert.Nil(t, err)
@@ -61,53 +72,60 @@ func TestEncodeVideoDataCommon(t *testing.T) {
 }
 
 func BenchmarkEncodeFlvTagCommon(b *testing.B) {
+	payload := []byte("test")
+	audioData := &AudioData{
+		SoundFormat:   SoundFormatAAC,
+		SoundRate:     SoundRate44kHz,
+		SoundSize:     SoundSize16Bit,
+		SoundType:     SoundTypeStereo,
+		AACPacketType: AACPacketTypeSequenceHeader,
+		Data:          nil,
+	}
 	tag := &FlvTag{
 		TagType:   TagTypeAudio,
 		Timestamp: 10,
 		StreamID:  0,
-		Data: &AudioData{
-			SoundFormat:   SoundFormatAAC,
-			SoundRate:     SoundRate44kHz,
-			SoundSize:     SoundSize16Bit,
-			SoundType:     SoundTypeStereo,
-			AACPacketType: AACPacketTypeSequenceHeader,
-			Data:          []byte("test"),
-		},
+		Data:      audioData,
 	}
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
+		audioData.Data = bytes.NewReader(payload)
 		_ = EncodeFlvTag(ioutil.Discard, tag)
 	}
 }
 
 func BenchmarkEncodeAudioDataCommon(b *testing.B) {
+	payload := []byte("test")
 	data := &AudioData{
 		SoundFormat:   SoundFormatAAC,
 		SoundRate:     SoundRate44kHz,
 		SoundSize:     SoundSize16Bit,
 		SoundType:     SoundTypeStereo,
 		AACPacketType: AACPacketTypeSequenceHeader,
-		Data:          []byte("test"),
+		Data:          nil,
 	}
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
+		data.Data = bytes.NewReader(payload)
 		_ = EncodeAudioData(ioutil.Discard, data)
 	}
 }
 
 func BenchmarkEncodeVideoDataCommon(b *testing.B) {
+	payload := []byte("test")
 	data := &VideoData{
 		FrameType:       FrameTypeKeyFrame,
 		CodecID:         CodecIDAVC,
 		AVCPacketType:   AVCPacketTypeSequenceHeader,
 		CompositionTime: 0,
-		Data:            []byte("test"),
+		Data:            nil,
 	}
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
+		data.Data = bytes.NewReader(payload)
 		_ = EncodeVideoData(ioutil.Discard, data)
 	}
 }

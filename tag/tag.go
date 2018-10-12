@@ -10,6 +10,7 @@ package tag
 import (
 	"github.com/yutopp/go-amf0"
 	"io"
+	"io/ioutil"
 )
 
 // ========================================
@@ -27,7 +28,18 @@ type FlvTag struct {
 	TagType
 	Timestamp uint32
 	StreamID  uint32      // 24bit
-	Data      interface{} // *AudioData | *VideoData
+	Data      interface{} // *AudioData | *VideoData | *ScriptData
+}
+
+// Close
+func (t *FlvTag) Close() {
+	// TODO: wrap an error?
+	switch data := t.Data.(type) {
+	case *AudioData:
+		data.Close()
+	case *VideoData:
+		data.Close()
+	}
 }
 
 // ========================================
@@ -84,6 +96,14 @@ type AudioData struct {
 	Data          io.Reader
 }
 
+func (d *AudioData) Read(buf []byte) (int, error) {
+	return d.Read(buf)
+}
+
+func (d *AudioData) Close() {
+	_, _ = io.Copy(ioutil.Discard, d.Data) //  // TODO: wrap an error?
+}
+
 type AACPacketType uint8
 
 const (
@@ -127,6 +147,14 @@ type VideoData struct {
 	AVCPacketType   AVCPacketType
 	CompositionTime int32
 	Data            io.Reader
+}
+
+func (d *VideoData) Read(buf []byte) (int, error) {
+	return d.Read(buf)
+}
+
+func (d *VideoData) Close() {
+	_, _ = io.Copy(ioutil.Discard, d.Data) //  // TODO: wrap an error?
 }
 
 type AVCPacketType uint8

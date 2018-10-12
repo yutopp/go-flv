@@ -16,7 +16,7 @@ import (
 	"io/ioutil"
 )
 
-func DecodeFlvTag(r io.Reader, flvTag *FlvTag) error {
+func DecodeFlvTag(r io.Reader, flvTag *FlvTag) (err error) {
 	ui32 := make([]byte, 4)
 	buf := make([]byte, 11)
 	if _, err := io.ReadAtLeast(r, buf, 1); err != nil {
@@ -43,11 +43,16 @@ func DecodeFlvTag(r io.Reader, flvTag *FlvTag) error {
 	}
 
 	lr := io.LimitReader(r, int64(dataSize))
+	defer func() {
+		if err != nil {
+			_, _ = io.Copy(ioutil.Discard, lr) // TODO: wrap an error?
+		}
+	}()
+
 	switch tagType {
 	case TagTypeAudio:
 		var v AudioData
 		if err := DecodeAudioData(lr, &v); err != nil {
-			io.Copy(ioutil.Discard, lr)
 			return errors.Wrap(err, "Failed to decode audio data")
 		}
 		flvTag.Data = &v
@@ -55,7 +60,6 @@ func DecodeFlvTag(r io.Reader, flvTag *FlvTag) error {
 	case TagTypeVideo:
 		var v VideoData
 		if err := DecodeVideoData(lr, &v); err != nil {
-			io.Copy(ioutil.Discard, lr)
 			return errors.Wrap(err, "Failed to decode video data")
 		}
 		flvTag.Data = &v
@@ -63,7 +67,6 @@ func DecodeFlvTag(r io.Reader, flvTag *FlvTag) error {
 	case TagTypeScriptData:
 		var v ScriptData
 		if err := DecodeScriptData(lr, &v); err != nil {
-			io.Copy(ioutil.Discard, lr)
 			return errors.Wrap(err, "Failed to decode script data")
 		}
 		flvTag.Data = &v

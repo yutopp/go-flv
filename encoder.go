@@ -82,7 +82,7 @@ func EncodeFlvHeader(w io.Writer, header *Header) error {
 
 	buf[4] = 0
 	if (header.Flags & FlagsAudio) != 0 {
-		buf[4] |= 0x03 // 0b00000100
+		buf[4] |= 0x04 // 0b00000100
 	}
 	if (header.Flags & FlagsVideo) != 0 {
 		buf[4] |= 0x01 // 0b00000001

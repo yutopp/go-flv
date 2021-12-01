@@ -48,31 +48,24 @@ func (dec *Decoder) Header() *Header {
 }
 
 func (dec *Decoder) Decode(flvTag *tag.FlvTag) error {
-	if !dec.decodedOnce {
-		goto tagSize
-	}
-
-body:
-	if err := tag.DecodeFlvTag(dec.r, flvTag); err != nil {
-		dec.skipTagSize()
-		return err
-	}
-
-tagSize:
+	// read previous tag size
 	previousTagSize, err := dec.decodeTagSize()
 	if err != nil {
 		return errors.Wrap(err, "Failed to decode tag size")
 	}
-
+	// first size must be 0
 	if !dec.decodedOnce {
 		if previousTagSize != 0 {
-			return fmt.Errorf("Initial tag size should be 0: Actual = %d", previousTagSize)
+			return fmt.Errorf("initial tag size should be 0: Actual = %d", previousTagSize)
 		}
 
 		dec.decodedOnce = true
-		goto body
 	}
-
+	// decode tag
+	if err := tag.DecodeFlvTag(dec.r, flvTag); err != nil {
+		dec.skipTagSize()
+		return err
+	}
 	return nil
 }
 

@@ -105,7 +105,7 @@ func DecodeFlvHeader(r io.Reader) (*Header, error) {
 
 	flags := buf[4]
 	//flagsReserved = (flags & 0xf8) >> 3 // 0b11111000
-	flagsAudio := (flags & 0x03) >> 2 // 0b00000100
+	flagsAudio := (flags & 0x04) >> 2 // 0b00000100
 	//flagsReserved2 := (flags & 0x02) >> 1 // 0b00000010
 	flagsVideo := (flags & 0x01) // 0b00000001
 

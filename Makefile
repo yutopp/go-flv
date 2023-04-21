@@ -1,26 +1,39 @@
-all: pre test
+FMT_DIRS:=$(shell go list -f {{.Dir}} ./...)
 
-pre: fmt vet lint
+.PHONY: all
+all: check test
 
+.PHONY: check
+check: fmt lint vet
+
+.PHONY: download-ci-tools
+download-ci-tools:
+	go install golang.org/x/tools/cmd/goimports@latest
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.50.1
+	curl -sSfL https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh | sh -s v0.14.1
+
+.PHONY: fmt
 fmt:
-	go fmt ./...
+	@gofmt -l -w -s $(FMT_DIRS)
+	@goimports -w $(FMT_DIRS)
 
+.PHONY: lint
+lint:
+	./bin/golangci-lint run ./...
+
+.PHONY: lint-ci
+lint-ci:
+	./bin/golangci-lint run ./... | \
+	./bin/reviewdog -f=golangci-lint -reporter=github-pr-review -filter-mode=nofilter
+
+.PHONY: vet
 vet:
 	go vet $$(go list ./... | grep -v /vendor/)
 
-lint:
-	golint $$(go list ./... | grep -v /vendor/)
-
+.PHONY: test
 test:
-	go test -v -race -cover ./...
+	go test -cover -coverprofile=coverage.txt -covermode=atomic -v -race -timeout 10s ./...
 
+.PHONY: bench
 bench:
-	go test -bench . -benchmem -gcflags="-m -l" ./...
-
-dep-init:
-	dep ensure
-
-dep-update:
-	dep ensure -update
-
-.PHONY: all pre fmt vet lint test bench dep-init dep-update
+	go test -bench . -benchmem -gcflags="-m -m -l" ./...

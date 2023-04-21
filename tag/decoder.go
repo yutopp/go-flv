@@ -10,10 +10,11 @@ package tag
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/pkg/errors"
-	"github.com/yutopp/go-amf0"
 	"io"
-	"io/ioutil"
+
+	"github.com/pkg/errors"
+
+	"github.com/yutopp/go-amf0"
 )
 
 func DecodeFlvTag(r io.Reader, flvTag *FlvTag) (err error) {
@@ -45,7 +46,7 @@ func DecodeFlvTag(r io.Reader, flvTag *FlvTag) (err error) {
 	lr := io.LimitReader(r, int64(dataSize))
 	defer func() {
 		if err != nil {
-			_, _ = io.Copy(ioutil.Discard, lr) // TODO: wrap an error?
+			_, _ = io.Copy(io.Discard, lr) // TODO: wrap an error?
 		}
 	}()
 

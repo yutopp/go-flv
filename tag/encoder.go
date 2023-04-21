@@ -11,8 +11,9 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	"github.com/yutopp/go-amf0"
 	"io"
+
+	"github.com/yutopp/go-amf0"
 )
 
 func EncodeFlvTag(w io.Writer, flvTag *FlvTag) error {

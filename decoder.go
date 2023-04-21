@@ -12,7 +12,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
-	"io/ioutil"
 
 	"github.com/pkg/errors"
 
@@ -33,7 +32,7 @@ func NewDecoder(r io.Reader) (*Decoder, error) {
 
 	if header.DataOffset > HeaderLength {
 		offset := header.DataOffset - HeaderLength
-		if _, err := io.CopyN(ioutil.Discard, r, int64(offset)); err != nil {
+		if _, err := io.CopyN(io.Discard, r, int64(offset)); err != nil {
 			return nil, err
 		}
 	}

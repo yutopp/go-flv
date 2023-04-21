@@ -9,8 +9,9 @@ package flv
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 
 	"github.com/yutopp/go-flv/tag"
 )
@@ -18,11 +19,11 @@ import (
 func TestDecodeSkipBrokenTag(t *testing.T) {
 	bin := []byte{
 		0x46, 0x4c, 0x56, // FLV
-		0x01,
-		0x05,
-		0x00, 0x00, 0x00, 0x09,
+		0x01,                   // version (only 1 is supported)
+		0x05,                   // flags (audio + video)
+		0x00, 0x00, 0x00, 0x09, // header size (9)
 		// 0-pad tag
-		0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, // previous tag size
 		// script data (broken)
 		0x12,
 		0x00, 0x00, 0x05, // 5Bytes
@@ -41,16 +42,16 @@ func TestDecodeSkipBrokenTag(t *testing.T) {
 	buf := bytes.NewReader(bin)
 
 	dec, err := NewDecoder(buf)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	var flvTag tag.FlvTag
 
 	// script data is broken, thus skipped
 	err = dec.Decode(&flvTag)
-	assert.NotNil(t, err)
+	require.NotNil(t, err)
 
 	//
 	err = dec.Decode(&flvTag)
-	assert.Nil(t, err)
-	assert.Equal(t, tag.TagTypeVideo, flvTag.TagType)
+	require.Nil(t, err)
+	require.Equal(t, tag.TagTypeVideo, flvTag.TagType)
 }

@@ -15,10 +15,11 @@ type Flags uint8
 
 const (
 	FlagsAudio Flags = 0x01
-	FlagsVideo       = 0x02
+	FlagsVideo Flags = 0x02
 )
 
 var HeaderSignature = []byte{0x46, 0x4c, 0x56} // F, L, V
+
 const HeaderLength uint32 = 9
 
 type Header struct {

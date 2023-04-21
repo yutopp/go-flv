@@ -19,7 +19,7 @@ type testCase struct {
 }
 
 var flvTagTestCases = []testCase{
-	testCase{
+	{
 		Name: "AudioData Tag",
 		Value: &FlvTag{
 			TagType:   TagTypeAudio,
@@ -50,7 +50,7 @@ var flvTagTestCases = []testCase{
 			0xaf, 0x00, 0x74, 0x65, 0x73, 0x74,
 		},
 	},
-	testCase{
+	{
 		Name: "VideoData Tag",
 		Value: &FlvTag{
 			TagType:   TagTypeVideo,
@@ -80,7 +80,7 @@ var flvTagTestCases = []testCase{
 			0x17, 0x00, 0x00, 0x00, 0x00, 0x74, 0x65, 0x73, 0x74,
 		},
 	},
-	testCase{
+	{
 		Name: "ScriptData Tag",
 		Value: &FlvTag{
 			TagType:   TagTypeScriptData,
@@ -88,7 +88,7 @@ var flvTagTestCases = []testCase{
 			StreamID:  0,
 			Data: &ScriptData{
 				Objects: map[string]amf0.ECMAArray{
-					"test": amf0.ECMAArray{},
+					"test": {},
 				},
 			},
 		},
@@ -109,7 +109,7 @@ var flvTagTestCases = []testCase{
 			0x00, 0x00, 0x09,
 		},
 	},
-	testCase{
+	{
 		Name: "Extended timestamp (boundary)",
 		Value: &FlvTag{
 			TagType:   TagTypeVideo,
@@ -139,7 +139,7 @@ var flvTagTestCases = []testCase{
 			0x17, 0x00, 0x00, 0x00, 0x00, 0x74, 0x65, 0x73, 0x74,
 		},
 	},
-	testCase{
+	{
 		Name: "Extended timestamp",
 		Value: &FlvTag{
 			TagType:   TagTypeVideo,
@@ -172,7 +172,7 @@ var flvTagTestCases = []testCase{
 }
 
 var audioDataTestCases = []testCase{
-	testCase{
+	{
 		Name: "AudioData(AAC, sequence header)",
 		Value: &AudioData{
 			SoundFormat:   SoundFormatAAC,
@@ -196,7 +196,7 @@ var audioDataTestCases = []testCase{
 			0x74, 0x65, 0x73, 0x74,
 		},
 	},
-	testCase{
+	{
 		Name: "AudioData(AAC, RAW)",
 		Value: &AudioData{
 			SoundFormat:   SoundFormatAAC,
@@ -220,7 +220,7 @@ var audioDataTestCases = []testCase{
 			0x74, 0x65, 0x73, 0x74,
 		},
 	},
-	testCase{
+	{
 		Name: "AudioData(Except AAC)",
 		Value: &AudioData{
 			SoundFormat: SoundFormatSpeex,
@@ -244,7 +244,7 @@ var audioDataTestCases = []testCase{
 }
 
 var videoDataTestCases = []testCase{
-	testCase{
+	{
 		Name: "VideoData(AVC, sequence header)",
 		Value: &VideoData{
 			FrameType:       FrameTypeKeyFrame,
@@ -267,7 +267,7 @@ var videoDataTestCases = []testCase{
 			0x74, 0x65, 0x73, 0x74,
 		},
 	},
-	testCase{
+	{
 		Name: "VideoData(AVC, NALU)",
 		Value: &VideoData{
 			FrameType:       FrameTypeInterFrame,
@@ -290,7 +290,7 @@ var videoDataTestCases = []testCase{
 			0x74, 0x65, 0x73, 0x74,
 		},
 	},
-	testCase{
+	{
 		Name: "VideoData(Expect AVC)",
 		Value: &VideoData{
 			FrameType: FrameTypeKeyFrame,
@@ -310,11 +310,11 @@ var videoDataTestCases = []testCase{
 }
 
 var scriptDataTestCases = []testCase{
-	testCase{
+	{
 		Name: "ScriptData",
 		Value: &ScriptData{
 			Objects: map[string]amf0.ECMAArray{
-				"test": amf0.ECMAArray{},
+				"test": {},
 			},
 		},
 		Binary: []byte{

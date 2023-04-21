@@ -11,8 +11,9 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	"github.com/yutopp/go-amf0"
 	"io"
+
+	"github.com/yutopp/go-amf0"
 )
 
 func EncodeFlvTag(w io.Writer, flvTag *FlvTag) error {
@@ -21,7 +22,7 @@ func EncodeFlvTag(w io.Writer, flvTag *FlvTag) error {
 	case TagTypeAudio:
 		ad, ok := flvTag.Data.(*AudioData)
 		if !ok {
-			return fmt.Errorf("Unexpected data is set: not *AudioData")
+			return fmt.Errorf("unexpected data is set: not *AudioData")
 		}
 		if err := EncodeAudioData(&dataBuf, ad); err != nil {
 			return err
@@ -30,7 +31,7 @@ func EncodeFlvTag(w io.Writer, flvTag *FlvTag) error {
 	case TagTypeVideo:
 		vd, ok := flvTag.Data.(*VideoData)
 		if !ok {
-			return fmt.Errorf("Unexpected data is set: not *VideoData")
+			return fmt.Errorf("unexpected data is set: not *VideoData")
 		}
 		if err := EncodeVideoData(&dataBuf, vd); err != nil {
 			return err
@@ -39,14 +40,14 @@ func EncodeFlvTag(w io.Writer, flvTag *FlvTag) error {
 	case TagTypeScriptData:
 		sd, ok := flvTag.Data.(*ScriptData)
 		if !ok {
-			return fmt.Errorf("Unexpected data is set: not *ScriptData")
+			return fmt.Errorf("unexpected data is set: not *ScriptData")
 		}
 		if err := EncodeScriptData(&dataBuf, sd); err != nil {
 			return err
 		}
 
 	default:
-		return fmt.Errorf("Unsupported tag type: %+v", flvTag.TagType)
+		return fmt.Errorf("unsupported tag type: %+v", flvTag.TagType)
 	}
 
 	ui32 := make([]byte, 4)

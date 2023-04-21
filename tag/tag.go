@@ -8,9 +8,9 @@
 package tag
 
 import (
-	"github.com/yutopp/go-amf0"
 	"io"
-	"io/ioutil"
+
+	"github.com/yutopp/go-amf0"
 )
 
 // ========================================
@@ -49,42 +49,42 @@ type SoundFormat uint8
 
 const (
 	SoundFormatLinearPCMPlatformEndian SoundFormat = 0
-	SoundFormatADPCM                               = 1
-	SoundFormatMP3                                 = 2
-	SoundFormatLinearPCMLittleEndian               = 3
-	SoundFormatNellymoser16kHzMono                 = 4
-	SoundFormatNellymoser8kHzMono                  = 5
-	SoundFormatNellymoser                          = 6
-	SoundFormatG711ALawLogarithmicPCM              = 7
-	SoundFormatG711muLawLogarithmicPCM             = 8
-	SoundFormatReserved                            = 9
-	SoundFormatAAC                                 = 10
-	SoundFormatSpeex                               = 11
-	SoundFormatMP3_8kHz                            = 14
-	SoundFormatDeviceSpecificSound                 = 15
+	SoundFormatADPCM                   SoundFormat = 1
+	SoundFormatMP3                     SoundFormat = 2
+	SoundFormatLinearPCMLittleEndian   SoundFormat = 3
+	SoundFormatNellymoser16kHzMono     SoundFormat = 4
+	SoundFormatNellymoser8kHzMono      SoundFormat = 5
+	SoundFormatNellymoser              SoundFormat = 6
+	SoundFormatG711ALawLogarithmicPCM  SoundFormat = 7
+	SoundFormatG711muLawLogarithmicPCM SoundFormat = 8
+	SoundFormatReserved                SoundFormat = 9
+	SoundFormatAAC                     SoundFormat = 10
+	SoundFormatSpeex                   SoundFormat = 11
+	SoundFormatMP3_8kHz                SoundFormat = 14
+	SoundFormatDeviceSpecificSound     SoundFormat = 15
 )
 
 type SoundRate uint8
 
 const (
 	SoundRate5_5kHz SoundRate = 0
-	SoundRate11kHz            = 1
-	SoundRate22kHz            = 2
-	SoundRate44kHz            = 3
+	SoundRate11kHz  SoundRate = 1
+	SoundRate22kHz  SoundRate = 2
+	SoundRate44kHz  SoundRate = 3
 )
 
 type SoundSize uint8
 
 const (
 	SoundSize8Bit  SoundSize = 0
-	SoundSize16Bit           = 1
+	SoundSize16Bit SoundSize = 1
 )
 
 type SoundType uint8
 
 const (
 	SoundTypeMono   SoundType = 0
-	SoundTypeStereo           = 1
+	SoundTypeStereo SoundType = 1
 )
 
 type AudioData struct {
@@ -97,18 +97,18 @@ type AudioData struct {
 }
 
 func (d *AudioData) Read(buf []byte) (int, error) {
-	return d.Read(buf)
+	return d.Data.Read(buf)
 }
 
 func (d *AudioData) Close() {
-	_, _ = io.Copy(ioutil.Discard, d.Data) //  // TODO: wrap an error?
+	_, _ = io.Copy(io.Discard, d.Data) //  // TODO: wrap an error?
 }
 
 type AACPacketType uint8
 
 const (
 	AACPacketTypeSequenceHeader AACPacketType = 0
-	AACPacketTypeRaw                          = 1
+	AACPacketTypeRaw            AACPacketType = 1
 )
 
 type AACAudioData struct {
@@ -123,22 +123,22 @@ type FrameType uint8
 
 const (
 	FrameTypeKeyFrame              FrameType = 1
-	FrameTypeInterFrame                      = 2
-	FrameTypeDisposableInterFrame            = 3
-	FrameTypeGeneratedKeyFrame               = 4
-	FrameTypeVideoInfoCommandFrame           = 5
+	FrameTypeInterFrame            FrameType = 2
+	FrameTypeDisposableInterFrame  FrameType = 3
+	FrameTypeGeneratedKeyFrame     FrameType = 4
+	FrameTypeVideoInfoCommandFrame FrameType = 5
 )
 
 type CodecID uint8
 
 const (
 	CodecIDJPEG                   CodecID = 1
-	CodecIDSorensonH263                   = 2
-	CodecIDScreenVideo                    = 3
-	CodecIDOn2VP6                         = 4
-	CodecIDOn2VP6WithAlphaChannel         = 5
-	CodecIDScreenVideoVersion2            = 6
-	CodecIDAVC                            = 7
+	CodecIDSorensonH263           CodecID = 2
+	CodecIDScreenVideo            CodecID = 3
+	CodecIDOn2VP6                 CodecID = 4
+	CodecIDOn2VP6WithAlphaChannel CodecID = 5
+	CodecIDScreenVideoVersion2    CodecID = 6
+	CodecIDAVC                    CodecID = 7
 )
 
 type VideoData struct {
@@ -150,19 +150,19 @@ type VideoData struct {
 }
 
 func (d *VideoData) Read(buf []byte) (int, error) {
-	return d.Read(buf)
+	return d.Data.Read(buf)
 }
 
 func (d *VideoData) Close() {
-	_, _ = io.Copy(ioutil.Discard, d.Data) //  // TODO: wrap an error?
+	_, _ = io.Copy(io.Discard, d.Data) //  // TODO: wrap an error?
 }
 
 type AVCPacketType uint8
 
 const (
 	AVCPacketTypeSequenceHeader AVCPacketType = 0
-	AVCPacketTypeNALU                         = 1
-	AVCPacketTypeEOS                          = 2
+	AVCPacketTypeNALU           AVCPacketType = 1
+	AVCPacketTypeEOS            AVCPacketType = 2
 )
 
 type AVCVideoPacket struct {

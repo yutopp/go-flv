@@ -9,33 +9,33 @@ package tag
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
 	"io"
-	"io/ioutil"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func assertEqualAudioData(t *testing.T, expected *AudioData, payload []byte, actual *AudioData) {
-	assert.Equal(t, expected.SoundFormat, actual.SoundFormat)
-	assert.Equal(t, expected.SoundRate, actual.SoundRate)
-	assert.Equal(t, expected.SoundSize, actual.SoundSize)
-	assert.Equal(t, expected.SoundType, actual.SoundType)
-	assert.Equal(t, expected.AACPacketType, actual.AACPacketType)
+	require.Equal(t, expected.SoundFormat, actual.SoundFormat)
+	require.Equal(t, expected.SoundRate, actual.SoundRate)
+	require.Equal(t, expected.SoundSize, actual.SoundSize)
+	require.Equal(t, expected.SoundType, actual.SoundType)
+	require.Equal(t, expected.AACPacketType, actual.AACPacketType)
 
-	actualPayload, err := ioutil.ReadAll(actual.Data)
-	assert.Nil(t, err)
-	assert.Equal(t, payload, actualPayload)
+	actualPayload, err := io.ReadAll(actual.Data)
+	require.Nil(t, err)
+	require.Equal(t, payload, actualPayload)
 }
 
 func assertEqualVideoData(t *testing.T, expected *VideoData, payload []byte, actual *VideoData) {
-	assert.Equal(t, expected.FrameType, actual.FrameType)
-	assert.Equal(t, expected.CodecID, actual.CodecID)
-	assert.Equal(t, expected.AVCPacketType, actual.AVCPacketType)
-	assert.Equal(t, expected.CompositionTime, actual.CompositionTime)
+	require.Equal(t, expected.FrameType, actual.FrameType)
+	require.Equal(t, expected.CodecID, actual.CodecID)
+	require.Equal(t, expected.AVCPacketType, actual.AVCPacketType)
+	require.Equal(t, expected.CompositionTime, actual.CompositionTime)
 
-	actualPayload, err := ioutil.ReadAll(actual.Data)
-	assert.Nil(t, err)
-	assert.Equal(t, payload, actualPayload)
+	actualPayload, err := io.ReadAll(actual.Data)
+	require.Nil(t, err)
+	require.Equal(t, payload, actualPayload)
 }
 
 func TestDecodeFlvTagCommon(t *testing.T) {
@@ -49,11 +49,11 @@ func TestDecodeFlvTagCommon(t *testing.T) {
 
 			var flvTag FlvTag
 			err := DecodeFlvTag(r, &flvTag)
-			assert.Nil(t, err)
+			require.Nil(t, err)
 
-			assert.Equal(t, tc.Value.(*FlvTag).TagType, flvTag.TagType)
-			assert.Equal(t, tc.Value.(*FlvTag).Timestamp, flvTag.Timestamp)
-			assert.Equal(t, tc.Value.(*FlvTag).StreamID, flvTag.StreamID)
+			require.Equal(t, tc.Value.(*FlvTag).TagType, flvTag.TagType)
+			require.Equal(t, tc.Value.(*FlvTag).Timestamp, flvTag.Timestamp)
+			require.Equal(t, tc.Value.(*FlvTag).StreamID, flvTag.StreamID)
 
 			switch data := flvTag.Data.(type) {
 			case *AudioData:
@@ -63,10 +63,10 @@ func TestDecodeFlvTagCommon(t *testing.T) {
 				tcData := tc.Value.(*FlvTag).Data.(*VideoData)
 				assertEqualVideoData(t, tcData, tc.Payload, data)
 			default:
-				assert.Equal(t, tc.Value.(*FlvTag).Data, flvTag.Data)
+				require.Equal(t, tc.Value.(*FlvTag).Data, flvTag.Data)
 			}
 
-			assert.Equal(t, 0, r.Len())
+			require.Equal(t, 0, r.Len())
 		})
 	}
 }
@@ -82,10 +82,10 @@ func TestDecodeAudioDataCommon(t *testing.T) {
 
 			var audioData AudioData
 			err := DecodeAudioData(r, &audioData)
-			assert.Nil(t, err)
+			require.Nil(t, err)
 			assertEqualAudioData(t, tc.Value.(*AudioData), tc.Payload, &audioData)
 
-			assert.Equal(t, 0, r.Len())
+			require.Equal(t, 0, r.Len())
 		})
 	}
 }
@@ -95,7 +95,7 @@ func TestDecodeEmptyAudio(t *testing.T) {
 
 	var audioData AudioData
 	err := DecodeAudioData(r, &audioData)
-	assert.Equal(t, io.EOF, err)
+	require.Equal(t, io.EOF, err)
 }
 
 func TestDecodeBrokenAudio(t *testing.T) {
@@ -103,7 +103,7 @@ func TestDecodeBrokenAudio(t *testing.T) {
 
 	var audioData AudioData
 	err := DecodeAudioData(r, &audioData)
-	assert.Equal(t, io.ErrUnexpectedEOF, err)
+	require.Equal(t, io.ErrUnexpectedEOF, err)
 }
 
 func TestDecodeVideoDataCommon(t *testing.T) {
@@ -117,10 +117,10 @@ func TestDecodeVideoDataCommon(t *testing.T) {
 
 			var videoData VideoData
 			err := DecodeVideoData(r, &videoData)
-			assert.Nil(t, err)
+			require.Nil(t, err)
 			assertEqualVideoData(t, tc.Value.(*VideoData), tc.Payload, &videoData)
 
-			assert.Equal(t, 0, r.Len())
+			require.Equal(t, 0, r.Len())
 		})
 	}
 }
@@ -130,7 +130,7 @@ func TestDecodeEmptyVideo(t *testing.T) {
 
 	var videoData VideoData
 	err := DecodeVideoData(r, &videoData)
-	assert.Equal(t, io.EOF, err)
+	require.Equal(t, io.EOF, err)
 }
 
 func TestDecodeBrokenVideo(t *testing.T) {
@@ -138,7 +138,7 @@ func TestDecodeBrokenVideo(t *testing.T) {
 
 	var videoData VideoData
 	err := DecodeVideoData(r, &videoData)
-	assert.Equal(t, io.ErrUnexpectedEOF, err)
+	require.Equal(t, io.ErrUnexpectedEOF, err)
 }
 
 func TestDecodeScriptDataCommon(t *testing.T) {
@@ -152,10 +152,10 @@ func TestDecodeScriptDataCommon(t *testing.T) {
 
 			var scriptData ScriptData
 			err := DecodeScriptData(r, &scriptData)
-			assert.Nil(t, err)
-			assert.Equal(t, tc.Value, &scriptData)
+			require.Nil(t, err)
+			require.Equal(t, tc.Value, &scriptData)
 
-			assert.Equal(t, 0, r.Len())
+			require.Equal(t, 0, r.Len())
 		})
 	}
 }
@@ -165,7 +165,7 @@ func TestDecodeEmptyScriptData(t *testing.T) {
 
 	var scriptData ScriptData
 	err := DecodeScriptData(r, &scriptData)
-	assert.Equal(t, nil, err)
+	require.Equal(t, nil, err)
 }
 
 func TestDecodeBrokenScriptData(t *testing.T) {
@@ -173,7 +173,7 @@ func TestDecodeBrokenScriptData(t *testing.T) {
 
 	var scriptData ScriptData
 	err := DecodeScriptData(r, &scriptData)
-	assert.EqualError(t, err, "Failed to decode key: unexpected EOF")
+	require.EqualError(t, err, "failed to decode key: unexpected EOF")
 }
 
 func TestDecodeScriptDataPartial(t *testing.T) {
@@ -182,7 +182,7 @@ func TestDecodeScriptDataPartial(t *testing.T) {
 
 	var scriptData ScriptData
 	err := DecodeScriptData(r, &scriptData)
-	assert.NotNil(t, err)
+	require.NotNil(t, err)
 }
 
 func TestDecodeSequentialTag(t *testing.T) {
@@ -199,11 +199,11 @@ func TestDecodeSequentialTag(t *testing.T) {
 		var v FlvTag
 		// 1
 		err := DecodeFlvTag(buf, &v)
-		assert.Nil(t, err)
+		require.Nil(t, err)
 
 		// 2
 		err = DecodeFlvTag(buf, &v)
-		assert.NotNil(t, err)
+		require.NotNil(t, err)
 	})
 
 	t.Run("Failed because tag is not closed", func(t *testing.T) {
@@ -212,12 +212,12 @@ func TestDecodeSequentialTag(t *testing.T) {
 		var v FlvTag
 		// 1
 		err := DecodeFlvTag(buf, &v)
-		assert.Nil(t, err)
+		require.Nil(t, err)
 		v.Close()
 
 		// 2
 		err = DecodeFlvTag(buf, &v)
-		assert.Nil(t, err)
+		require.Nil(t, err)
 		v.Close()
 	})
 }

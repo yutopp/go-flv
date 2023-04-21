@@ -9,10 +9,11 @@ package tag
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
-	"github.com/yutopp/go-amf0"
-	"io/ioutil"
+	"io"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+	"github.com/yutopp/go-amf0"
 )
 
 func TestEncodeFlvTagCommon(t *testing.T) {
@@ -31,8 +32,8 @@ func TestEncodeFlvTagCommon(t *testing.T) {
 
 			var buf bytes.Buffer
 			err := EncodeFlvTag(&buf, tc.Value.(*FlvTag))
-			assert.Nil(t, err)
-			assert.Equal(t, tc.Binary, buf.Bytes())
+			require.Nil(t, err)
+			require.Equal(t, tc.Binary, buf.Bytes())
 		})
 	}
 }
@@ -48,8 +49,8 @@ func TestEncodeAudioDataCommon(t *testing.T) {
 
 			var buf bytes.Buffer
 			err := EncodeAudioData(&buf, tc.Value.(*AudioData))
-			assert.Nil(t, err)
-			assert.Equal(t, tc.Binary, buf.Bytes())
+			require.Nil(t, err)
+			require.Equal(t, tc.Binary, buf.Bytes())
 		})
 	}
 }
@@ -65,8 +66,8 @@ func TestEncodeVideoDataCommon(t *testing.T) {
 
 			var buf bytes.Buffer
 			err := EncodeVideoData(&buf, tc.Value.(*VideoData))
-			assert.Nil(t, err)
-			assert.Equal(t, tc.Binary, buf.Bytes())
+			require.Nil(t, err)
+			require.Equal(t, tc.Binary, buf.Bytes())
 		})
 	}
 }
@@ -91,7 +92,7 @@ func BenchmarkEncodeFlvTagCommon(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		audioData.Data = bytes.NewReader(payload)
-		_ = EncodeFlvTag(ioutil.Discard, tag)
+		_ = EncodeFlvTag(io.Discard, tag)
 	}
 }
 
@@ -109,7 +110,7 @@ func BenchmarkEncodeAudioDataCommon(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		data.Data = bytes.NewReader(payload)
-		_ = EncodeAudioData(ioutil.Discard, data)
+		_ = EncodeAudioData(io.Discard, data)
 	}
 }
 
@@ -126,7 +127,7 @@ func BenchmarkEncodeVideoDataCommon(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		data.Data = bytes.NewReader(payload)
-		_ = EncodeVideoData(ioutil.Discard, data)
+		_ = EncodeVideoData(io.Discard, data)
 	}
 }
 
@@ -139,6 +140,6 @@ func BenchmarkEncodeScriptDataCommon(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_ = EncodeScriptData(ioutil.Discard, data)
+		_ = EncodeScriptData(io.Discard, data)
 	}
 }

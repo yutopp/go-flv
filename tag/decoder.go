@@ -10,10 +10,9 @@ package tag
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/pkg/errors"
-	"github.com/yutopp/go-amf0"
 	"io"
-	"io/ioutil"
+
+	"github.com/yutopp/go-amf0"
 )
 
 func DecodeFlvTag(r io.Reader, flvTag *FlvTag) (err error) {
@@ -45,7 +44,7 @@ func DecodeFlvTag(r io.Reader, flvTag *FlvTag) (err error) {
 	lr := io.LimitReader(r, int64(dataSize))
 	defer func() {
 		if err != nil {
-			_, _ = io.Copy(ioutil.Discard, lr) // TODO: wrap an error?
+			_, _ = io.Copy(io.Discard, lr) // TODO: wrap an error?
 		}
 	}()
 
@@ -53,26 +52,26 @@ func DecodeFlvTag(r io.Reader, flvTag *FlvTag) (err error) {
 	case TagTypeAudio:
 		var v AudioData
 		if err := DecodeAudioData(lr, &v); err != nil {
-			return errors.Wrap(err, "Failed to decode audio data")
+			return fmt.Errorf("failed to decode audio data: %w", err)
 		}
 		flvTag.Data = &v
 
 	case TagTypeVideo:
 		var v VideoData
 		if err := DecodeVideoData(lr, &v); err != nil {
-			return errors.Wrap(err, "Failed to decode video data")
+			return fmt.Errorf("failed to decode video data: %w", err)
 		}
 		flvTag.Data = &v
 
 	case TagTypeScriptData:
 		var v ScriptData
 		if err := DecodeScriptData(lr, &v); err != nil {
-			return errors.Wrap(err, "Failed to decode script data")
+			return fmt.Errorf("failed to decode script data: %w", err)
 		}
 		flvTag.Data = &v
 
 	default:
-		return fmt.Errorf("Unsupported tag type: %+v", tagType)
+		return fmt.Errorf("unsupported tag type: %+v", tagType)
 	}
 
 	return nil
@@ -186,12 +185,12 @@ func DecodeScriptData(r io.Reader, data *ScriptData) error {
 			if err == io.EOF {
 				break
 			}
-			return errors.Wrap(err, "Failed to decode key")
+			return fmt.Errorf("failed to decode key: %w", err)
 		}
 
 		var value amf0.ECMAArray
 		if err := dec.Decode(&value); err != nil {
-			return errors.Wrap(err, "Failed to decode value")
+			return fmt.Errorf("failed to decode value: %w", err)
 		}
 
 		kv[key] = value

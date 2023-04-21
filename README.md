@@ -1,7 +1,7 @@
 # go-flv
 
-[![CircleCI](https://circleci.com/gh/yutopp/go-flv.svg?style=svg)](https://circleci.com/gh/yutopp/go-flv)
-[![Coverage Status](https://coveralls.io/repos/github/yutopp/go-flv/badge.svg)](https://coveralls.io/github/yutopp/go-flv)
+[![ci](https://github.com/yutopp/go-flv/workflows/ci/badge.svg)](https://github.com/yutopp/go-flv/actions?query=workflow%3Aci)
+[![codecov](https://codecov.io/gh/yutopp/go-flv/branch/master/graph/badge.svg?token=31FKbT3oBh)](https://codecov.io/gh/yutopp/go-flv)
 [![GoDoc](https://godoc.org/github.com/yutopp/go-flv?status.svg)](http://godoc.org/github.com/yutopp/go-flv)
 [![Go Report Card](https://goreportcard.com/badge/github.com/yutopp/go-flv)](https://goreportcard.com/report/github.com/yutopp/go-flv)
 [![license](https://img.shields.io/github/license/yutopp/go-flv.svg)](https://github.com/yutopp/go-flv/blob/master/LICENSE_1_0.txt)
@@ -41,5 +41,5 @@ go get github.com/yutopp/go-flv
 
 ## References
 
-- [spec](https://wwwimages2.adobe.com/content/dam/acom/en/devnet/flv/video_file_format_spec_v10.pdf)
+- [FLV specification](https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf)
   - The FLV File Format

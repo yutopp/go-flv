@@ -13,8 +13,6 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/pkg/errors"
-
 	"github.com/yutopp/go-flv/tag"
 )
 
@@ -51,7 +49,7 @@ func (dec *Decoder) Decode(flvTag *tag.FlvTag) error {
 	// read previous tag size
 	previousTagSize, err := dec.decodeTagSize()
 	if err != nil {
-		return errors.Wrap(err, "Failed to decode tag size")
+		return fmt.Errorf("failed to decode tag size: %w", err)
 	}
 	// first size must be 0
 	if !dec.decodedOnce {

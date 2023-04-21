@@ -173,7 +173,7 @@ func TestDecodeBrokenScriptData(t *testing.T) {
 
 	var scriptData ScriptData
 	err := DecodeScriptData(r, &scriptData)
-	require.EqualError(t, err, "Failed to decode key: unexpected EOF")
+	require.EqualError(t, err, "failed to decode key: unexpected EOF")
 }
 
 func TestDecodeScriptDataPartial(t *testing.T) {

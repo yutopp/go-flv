@@ -62,7 +62,7 @@ tagSize:
 	buf := make([]byte, 4)
 	binary.BigEndian.PutUint32(buf, previousTagSize)
 	if _, err := enc.w.Write(buf); err != nil {
-		return nil
+		return err
 	}
 
 	if !enc.encodedOnce {
